@@ -1,0 +1,474 @@
+openapi: 3.0.3
+info:
+  title: WASAPhoto
+  description: |-
+    This is the app for Wasa Project 2022/23
+  version: "1"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: integer
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  parameters:
+    UserId:
+      schema:
+        type: integer
+        example: 1
+      name: id
+      in: path
+      required: true
+      description: The unique user identifier
+    PhotoId:
+      name: photoId
+      schema:
+        type: integer
+        example: 1
+      in: path
+      required: true
+      description: The unique photo identifier
+    CommentId:
+      name: commentId
+      schema:
+        type: integer
+        example: 1
+      in: path
+      required: true
+      description: The unique comment identifier
+    Username:
+      schema:
+        type: string
+        example: Federiko98
+      name: username
+      in: path
+      required: true
+      description: Username of the user decided by the user during the registration
+
+  schemas:
+    Username:
+      type: string
+      example: Federiko98
+      pattern: 'ˆ.*?$'
+      minLength: 3
+      maxLength: 16
+    User:
+      title: User
+      description: User object for the app WASAPhoto
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name: { $ref: "#/components/schemas/Username" }
+    Photos:
+      title: Photos
+      type: array
+      items:
+        type: string
+      example: [ "www.bucketserver.com/image.jpg", "www.bucketserver.com/image2.jpg", "www.bucketserver.com/image3.jpg" ]
+    UserProfilePage:
+      title: UserProfile
+      description: User profile page for the app WASAPhoto
+      type: object
+      properties:
+        id:
+          description: User id
+          type: integer
+          example: 1
+        username: { $ref: "#/components/schemas/Username" }
+        photos: { $ref: "#/components/schemas/Photos" }
+        numberOfPhotos:
+          description: Photos count
+          type: integer
+          example: 1
+        numberOfFollowers:
+          description: Followers count
+          type: integer
+          example: 340
+        numberOfFollowing:
+          description: Followers count
+          type: integer
+          example: 400
+    Image:
+      type: string
+      format: binary
+    Post:
+      type: object
+      properties:
+        owner:
+          { $ref: "#/components/schemas/Username" }
+        photo:
+          type: string
+          example: www.bucketserver.com/image.jpg
+        creationDate:
+          type: string
+          format: date-time
+        numberOfLikes:
+          type: integer
+          example: 200
+        numberOfComments:
+          type: integer
+          example: 20
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        owner:
+          { $ref: "#/components/schemas/Username" }
+        content:
+          type: string
+          example: "Nice photo!"
+        creationDate:
+          type: string
+          format: date-time
+paths:
+  /session:
+    post:
+      tags: [ "profile" ]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { $ref: "#/components/schemas/Username" }
+        required: true
+      responses:
+        201:
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: integer
+                    example: "1"
+
+  /updateProfile/username:
+    put:
+      tags: [ "profile" ]
+      summary: Update the username
+      description: |
+        If the token in the header is valid, the username is updated 
+        with the new one provided in the body.
+      operationId: setMyUserName
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/User" }
+      responses:
+        200:
+          description: Username updated successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        404:
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: integer
+                    example: 1
+      security:
+        - bearerAuth: [ ]
+
+  /profilePage/{username}:
+    parameters:
+      - { $ref: "#/components/parameters/Username" }
+    get:
+      tags: [ "profile" ]
+      summary: Get the user profile page
+      description: |-
+        Get the user profile page with the photos and the number of followers and following.
+      operationId: getUserProfile
+      responses:
+        200:
+          description: User profile page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfilePage"
+        404:
+          description: User not found
+
+  /photos:
+    get:
+      tags: [ "photos" ]
+      summary: Returns the photos of the followed users
+      description: |-
+        Return the personal photos stream of the user specified in the authorization header.
+        The photos are returned in reverse chronological order, and they are based on the 
+        following relationships.
+      operationId: getMyStream
+      responses:
+        200:
+          description: User photos stream
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/Post" }
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+      security:
+        - bearerAuth: [ ]
+    post:
+      tags: [ "photos" ]
+      summary: Post a photo
+      description: |-
+        Post a photo to the server, and the photo is added to the user profile page.
+        The user must be logged in.
+      operationId: uploadPhoto
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image: { $ref: "#/components/schemas/Image" }
+      responses:
+        200:
+          description: Photo posted successfully
+        400:
+          description: Bad request
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+      security:
+        - bearerAuth: [ ]
+
+  /photos/{photoId}:
+    parameters:
+      - { $ref: "#/components/parameters/PhotoId" }
+    delete:
+      tags: [ "photos" ]
+      summary: Delete the photo
+      description: |-
+        Delete the photo passed in the path only if the user is the owner of the photo.
+      operationId: deletePhoto
+      responses:
+        200:
+          description: Photo deleted successfully
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: Image not found
+      security:
+        - bearerAuth: [ ]
+
+  /follow/{username}:
+    parameters:
+      - { $ref: "#/components/parameters/Username" }
+    post:
+      tags: [ "social" ]
+      summary: Follow an user
+      description: |-
+        Follow the user with the id specified by the user in the authorization header.
+      operationId: followUser
+      responses:
+        "200":
+          description: User followed correctly
+        "401":
+          { $ref: "#/components/responses/UnauthorizedError" }
+        "404":
+          description: User not found
+      security:
+        - bearerAuth: [ ]
+    delete:
+      tags: [ "social" ]
+      summary: Unfollow a user
+      description: |-
+        Remove the follow relationship between the user with the id 
+        specified by the user in the authorization header.
+      operationId: unfollowUser
+      responses:
+        200:
+          description: User unfollowed correctly
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: User not found
+      security:
+        - bearerAuth: [ ]
+  /ban/{username}:
+    post:
+      parameters:
+        - { $ref: "#/components/parameters/Username" }
+      tags: [ "social" ]
+      summary: Ban an user
+      description: |-
+        Ban the user specified for the user with the id specified 
+        by the user in the authorization header.
+      operationId: banUser
+      responses:
+        200:
+          description: User banned correctly
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: User not found
+      security:
+        - bearerAuth: [ ]
+    delete:
+      parameters:
+        - { $ref: "#/components/parameters/Username" }
+      tags: [ "social" ]
+      summary: Remove a ban
+      description: |-
+        Remove the user passed in the path from the banned
+        list of the user with the authorization header.
+      operationId: unbanUser
+      responses:
+        200:
+          description: "User unbanned correctly"
+        404:
+          description: "User not found"
+        400:
+          description: "User not banned"
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+      security:
+        - bearerAuth: [ ]
+
+
+  /photos/{photoId}/likes:
+    parameters:
+      - { $ref: "#/components/parameters/PhotoId" }
+    post:
+      tags: [ "likes" ]
+      summary: Add a like to a photo
+      description: |-
+        Add a like to the photo passed in the path, from the user specified in the authorization header.
+        If the user already liked the photo, return an error.
+        The user must be logged in.
+      operationId: likePhoto
+      responses:
+        200:
+          description: Like added successfully
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: Photo not found
+      security:
+        - bearerAuth: [ ]
+    delete:
+      tags: [ "likes" ]
+      summary: Remove the like from the photo
+      description: |-
+        If the photo exists and a like was added, it will be removed.
+        If the photo exists and there were no like or no photo is targeted,
+        nothing happens.
+      operationId: unlikePhoto
+      responses:
+        "200":
+          description: Like removed successfully
+        "400":
+          description: Like not found
+        "401":
+          { $ref: "#/components/responses/UnauthorizedError" }
+        "404":
+          description: Photo not found
+      security:
+        - bearerAuth: [ ]
+
+  /photos/{photoId}/comments:
+    parameters:
+      - { $ref: "#/components/parameters/PhotoId" }
+    get:
+      tags: [ "comments" ]
+      summary: Returns the comments of a photo
+      description: |-
+        Return the comments of the photo passed in the path. 
+        There is no need to be logged in to see the comments.
+      operationId: getPhotoComments
+      responses:
+        200:
+          description: List of Comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/Comment" }
+        404:
+          description: Photo not found
+    post:
+      tags: [ "comments" ]
+      summary: Create a comment for a photo
+      description: |-
+        Post a comment for the photo passed in the path, 
+        from the user specified in the authorization header.
+        If the photo does not exist, return an error.
+        The user must be logged in.
+      operationId: commentPhoto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/Comment" }
+      responses:
+        200:
+          description: Comment posted successfully
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          description: Photo not found
+      security:
+        - bearerAuth: [ ]
+
+  /comments/{commentId}:
+    parameters:
+      - { $ref: "#/components/parameters/CommentId" }
+    get:
+      tags: [ "comments" ]
+      summary: Returns a comment
+      description: |-
+        Return the comment passed in the path. 
+        There is no need to be logged in to see the comment.
+        If the comment does not exist, return an error.
+      operationId: getComment
+      responses:
+        200:
+          description: Comment retrieved successfully
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/Comment" }
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: Comment not found
+    delete:
+      tags: [ "comments" ]
+      summary: Delete a comment
+      description: |-
+        Delete the comment passed in the path, 
+        from the user specified in the authorization header.
+        If the comment does not exist, return an error.
+        The user must be logged in.
+      operationId: uncommentPhoto
+      responses:
+        200:
+          description: Comment removed successfully from the photo
+        401:
+          { $ref: "#/components/responses/UnauthorizedError" }
+        404:
+          description: Comment not found
+      security:
+        - bearerAuth: [ ]
