@@ -3,7 +3,7 @@ info:
   title: WASAPhoto
   description: |-
     This is the app for Wasa Project 2022/23
-  version: "1"
+  version: "1.0"
 components:
   securitySchemes:
     bearerAuth:
@@ -46,7 +46,6 @@ components:
       in: path
       required: true
       description: Username of the user decided by the user during the registration
-
   schemas:
     Username:
       type: string
@@ -157,7 +156,7 @@ paths:
                     type: integer
                     example: "1"
 
-  /updateProfile/username:
+  /update-profile-username:
     put:
       tags: [ "profile" ]
       summary: Update the username
@@ -188,7 +187,7 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /profilePage/{username}:
+  /profile-page/{username}:
     parameters:
       - { $ref: "#/components/parameters/Username" }
     get:
@@ -207,7 +206,7 @@ paths:
         404:
           description: User not found
 
-  /photos:
+  /photos/:
     get:
       tags: [ "photos" ]
       summary: Returns the photos of the followed users
@@ -253,7 +252,7 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /photos/{photoId}:
+  /photos/{photoId}/:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     delete:
