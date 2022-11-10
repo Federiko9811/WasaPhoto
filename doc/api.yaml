@@ -208,7 +208,7 @@ paths:
 
   /photos/:
     get:
-      tags: [ "photos" ]
+      tags: [ "photos interactions" ]
       summary: Returns the photos of the followed users
       description: |-
         Return the personal photos stream of the user specified in the authorization header.
@@ -229,7 +229,7 @@ paths:
       security:
         - bearerAuth: [ ]
     post:
-      tags: [ "photos" ]
+      tags: [ "photos interactions" ]
       summary: Post a photo
       description: |-
         Post a photo to the server, and the photo is added to the user profile page.
@@ -256,7 +256,7 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     delete:
-      tags: [ "photos" ]
+      tags: [ "photos interactions" ]
       summary: Delete the photo
       description: |-
         Delete the photo passed in the path only if the user is the owner of the photo.
@@ -350,7 +350,7 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     post:
-      tags: [ "likes" ]
+      tags: [ "photos interactions" ]
       summary: Add a like to a photo
       description: |-
         Add a like to the photo passed in the path, from the user specified in the authorization header.
@@ -367,7 +367,7 @@ paths:
       security:
         - bearerAuth: [ ]
     delete:
-      tags: [ "likes" ]
+      tags: [ "photos interactions" ]
       summary: Remove the like from the photo
       description: |-
         If the photo exists and a like was added, it will be removed.
@@ -390,7 +390,7 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     get:
-      tags: [ "comments" ]
+      tags: [ "photos interactions" ]
       summary: Returns the comments of a photo
       description: |-
         Return the comments of the photo passed in the path. 
@@ -408,7 +408,7 @@ paths:
         404:
           description: Photo not found
     post:
-      tags: [ "comments" ]
+      tags: [ "photos interactions" ]
       summary: Create a comment for a photo
       description: |-
         Post a comment for the photo passed in the path, 
