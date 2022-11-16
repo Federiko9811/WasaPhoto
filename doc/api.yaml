@@ -62,12 +62,32 @@ components:
           type: integer
           example: 1
         name: { $ref: "#/components/schemas/Username" }
+    Photo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        owner:
+          $ref: "#/components/schemas/User"
+        url:
+          type: string
+          example: www.bucketserver.com/image.jpg
+        creationDate:
+          type: string
+          format: date-time
+        numberOfLikes:
+          type: integer
+          example: 200
+        numberOfComments:
+          type: integer
+          example: 20
+      example: { "id": 1, "owner": { "id": 1, "name": "Federiko98" }, "url": "www.bucketserver.com/image.jpg", "creationDate": "2021-10-10T10:10:10Z", "numberOfLikes": 200, "numberOfComments": 20 }
     Photos:
       title: Photos
       type: array
       items:
-        type: string
-      example: [ "www.bucketserver.com/image.jpg", "www.bucketserver.com/image2.jpg", "www.bucketserver.com/image3.jpg" ]
+        $ref: "#/components/schemas/Photo"
     UserProfilePage:
       title: UserProfile
       description: User profile page for the app WASAPhoto
@@ -82,7 +102,7 @@ components:
         numberOfPhotos:
           description: Photos count
           type: integer
-          example: 1
+          example: 2
         numberOfFollowers:
           description: Followers count
           type: integer
@@ -91,26 +111,32 @@ components:
           description: Followers count
           type: integer
           example: 400
+      example:
+        id: 1
+        username: Federiko98
+        photos:
+          - id: 1
+            owner:
+              id: 1
+              name: Federiko98
+            url: www.bucketserver.com/image.jpg
+            creationDate: "2021-10-10T10:10:10Z"
+            numberOfLikes: 200
+            numberOfComments: 20
+          - id: 2
+            owner:
+              id: 1
+              name: Federiko98
+            url: www.bucketserver.com/image.jpg
+            creationDate: "2021-10-10T10:10:10Z"
+            numberOfLikes: 200
+            numberOfComments: 20
+        numberOfPhotos: 2
+        numberOfFollowers: 340
+        numberOfFollowing: 400
     Image:
       type: string
       format: binary
-    Post:
-      type: object
-      properties:
-        owner:
-          { $ref: "#/components/schemas/Username" }
-        photo:
-          type: string
-          example: www.bucketserver.com/image.jpg
-        creationDate:
-          type: string
-          format: date-time
-        numberOfLikes:
-          type: integer
-          example: 200
-        numberOfComments:
-          type: integer
-          example: 20
     Comment:
       type: object
       properties:
@@ -161,7 +187,7 @@ paths:
       tags: [ "profile" ]
       summary: Update the username
       description: |
-        If the token in the header is valid, the username is updated 
+        If the token in the header is valid, the username is updated
         with the new one provided in the body.
       operationId: setMyUserName
       requestBody:
@@ -205,6 +231,32 @@ paths:
                 $ref: "#/components/schemas/UserProfilePage"
         404:
           description: User not found
+  /search/{string}:
+    parameters:
+      - in: path
+        name: string
+        schema:
+          type: string
+          example: "Fede"
+        required: true
+        description: String to match with the username
+    get:
+      tags: [ "profile" ]
+      summary: Get the list of all users that have the string in their username
+      description: |-
+        Get the list of all users that have the string passed in the path in their username.
+      operationId: getUsersList
+      responses:
+        200:
+          description: User profile list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        404:
+          description: There are no users with the string in their username
 
   /photos/:
     get:
@@ -212,7 +264,7 @@ paths:
       summary: Returns the photos of the followed users
       description: |-
         Return the personal photos stream of the user specified in the authorization header.
-        The photos are returned in reverse chronological order, and they are based on the 
+        The photos are returned in reverse chronological order, and they are based on the
         following relationships.
       operationId: getMyStream
       responses:
@@ -223,7 +275,7 @@ paths:
               schema:
                 type: array
                 items:
-                  { $ref: "#/components/schemas/Post" }
+                  $ref: "#/components/schemas/Photo"
         401:
           { $ref: "#/components/responses/UnauthorizedError" }
       security:
@@ -293,7 +345,7 @@ paths:
       tags: [ "social" ]
       summary: Unfollow a user
       description: |-
-        Remove the follow relationship between the user with the id 
+        Remove the follow relationship between the user with the id
         specified by the user in the authorization header.
       operationId: unfollowUser
       responses:
@@ -312,7 +364,7 @@ paths:
       tags: [ "social" ]
       summary: Ban an user
       description: |-
-        Ban the user specified for the user with the id specified 
+        Ban the user specified for the user with the id specified
         by the user in the authorization header.
       operationId: banUser
       responses:
@@ -393,7 +445,7 @@ paths:
       tags: [ "photos interactions" ]
       summary: Returns the comments of a photo
       description: |-
-        Return the comments of the photo passed in the path. 
+        Return the comments of the photo passed in the path.
         There is no need to be logged in to see the comments.
       operationId: getPhotoComments
       responses:
@@ -411,7 +463,7 @@ paths:
       tags: [ "photos interactions" ]
       summary: Create a comment for a photo
       description: |-
-        Post a comment for the photo passed in the path, 
+        Post a comment for the photo passed in the path,
         from the user specified in the authorization header.
         If the photo does not exist, return an error.
         The user must be logged in.
@@ -438,7 +490,7 @@ paths:
       tags: [ "comments" ]
       summary: Returns a comment
       description: |-
-        Return the comment passed in the path. 
+        Return the comment passed in the path.
         There is no need to be logged in to see the comment.
         If the comment does not exist, return an error.
       operationId: getComment
@@ -457,7 +509,7 @@ paths:
       tags: [ "comments" ]
       summary: Delete a comment
       description: |-
-        Delete the comment passed in the path, 
+        Delete the comment passed in the path,
         from the user specified in the authorization header.
         If the comment does not exist, return an error.
         The user must be logged in.
