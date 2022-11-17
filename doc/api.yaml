@@ -3,6 +3,7 @@ info:
   title: WASAPhoto
   description: |-
     This is the app for Wasa Project 2022/23
+    Federico Raponi 1963339
   version: "1.0"
 components:
   securitySchemes:
@@ -12,7 +13,7 @@ components:
       bearerFormat: integer
   responses:
     UnauthorizedError:
-      description: Access token is missing or invalid
+      description: The token is not valid for this action or is not present
   parameters:
     UserId:
       schema:
@@ -70,9 +71,9 @@ components:
           example: 1
         owner:
           $ref: "#/components/schemas/User"
-        url:
+        img:
           type: string
-          example: www.bucketserver.com/image.jpg
+          format: binary
         creationDate:
           type: string
           format: date-time
@@ -82,7 +83,6 @@ components:
         numberOfComments:
           type: integer
           example: 20
-      example: { "id": 1, "owner": { "id": 1, "name": "Federiko98" }, "url": "www.bucketserver.com/image.jpg", "creationDate": "2021-10-10T10:10:10Z", "numberOfLikes": 200, "numberOfComments": 20 }
     Photos:
       title: Photos
       type: array
@@ -90,7 +90,9 @@ components:
         $ref: "#/components/schemas/Photo"
     UserProfilePage:
       title: UserProfile
-      description: User profile page for the app WASAPhoto
+      description: |-
+        This is the user profile page
+        It contains the user information and the photos uploaded by the user
       type: object
       properties:
         id:
@@ -111,29 +113,6 @@ components:
           description: Followers count
           type: integer
           example: 400
-      example:
-        id: 1
-        username: Federiko98
-        photos:
-          - id: 1
-            owner:
-              id: 1
-              name: Federiko98
-            url: www.bucketserver.com/image.jpg
-            creationDate: "2021-10-10T10:10:10Z"
-            numberOfLikes: 200
-            numberOfComments: 20
-          - id: 2
-            owner:
-              id: 1
-              name: Federiko98
-            url: www.bucketserver.com/image.jpg
-            creationDate: "2021-10-10T10:10:10Z"
-            numberOfLikes: 200
-            numberOfComments: 20
-        numberOfPhotos: 2
-        numberOfFollowers: 340
-        numberOfFollowing: 400
     Image:
       type: string
       format: binary
@@ -189,6 +168,7 @@ paths:
       description: |
         If the token in the header is valid, the username is updated
         with the new one provided in the body.
+        If the token is not valid, the response is 404 Not Found.
       operationId: setMyUserName
       requestBody:
         content:
@@ -220,7 +200,10 @@ paths:
       tags: [ "profile" ]
       summary: Get the user profile page
       description: |-
-        Get the user profile page with the photos and the number of followers and following.
+        Get the user profile page with the list of photos uploaded by the user and the user information.
+        If the user does not exist, the response is 404 Not Found.
+        If the token in the header corresponds to a user in the list of banned user of the user profile page,
+        the response is 403 Forbidden.
       operationId: getUserProfile
       responses:
         200:
@@ -231,6 +214,10 @@ paths:
                 $ref: "#/components/schemas/UserProfilePage"
         404:
           description: User not found
+        403:
+          description: You cannot access this user profile page because you are banned by this user
+      security:
+        - bearerAuth: [ ]
   /search/{string}:
     parameters:
       - in: path
@@ -242,9 +229,10 @@ paths:
         description: String to match with the username
     get:
       tags: [ "profile" ]
-      summary: Get the list of all users that have the string in their username
+      summary: Get the list of all users with the username matching the string
       description: |-
-        Get the list of all users that have the string passed in the path in their username.
+        Get the list of all users that have the string passed in the path in their username, ignoring case.
+        If the string is empty or don't match, the response is 404 Not Found.
       operationId: getUsersList
       responses:
         200:
@@ -256,7 +244,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/User"
         404:
-          description: There are no users with the string in their username
+          description: There are no users with that string in their username
 
   /photos/:
     get:
@@ -285,7 +273,8 @@ paths:
       summary: Post a photo
       description: |-
         Post a photo to the server, and the photo is added to the user profile page.
-        The user must be logged in.
+        The user must be logged in. If the user is not logged in, the response is 401 Unauthorized.
+        If the file is not an image, the response is 400 Bad Request.
       operationId: uploadPhoto
       requestBody:
         content:
@@ -295,8 +284,8 @@ paths:
               properties:
                 image: { $ref: "#/components/schemas/Image" }
       responses:
-        200:
-          description: Photo posted successfully
+        201:
+          description: Photo created successfully
         400:
           description: Bad request
         401:
@@ -311,7 +300,10 @@ paths:
       tags: [ "photos interactions" ]
       summary: Delete the photo
       description: |-
-        Delete the photo passed in the path only if the user is the owner of the photo.
+        Delete the photo passed in the path only if the user is 
+        the owner of the photo, checking the token in the header.
+        If the photo does not exist, the response is 404 Not Found.
+        If the user is not the owner of the photo, the response is 401 Unauthorized.
       operationId: deletePhoto
       responses:
         200:
@@ -331,26 +323,43 @@ paths:
       summary: Follow an user
       description: |-
         Follow the user with the id specified by the user in the authorization header.
+        It will be added to the list of followed users of the user in the authorization header.
+        If the user does not exist, the response is 404 Not Found.
+        If the user is already followed, the response is 400 Bad Request.
+        If the token in the header is not valid, the response is 401 Unauthorized.
+        If the user tries to follow himself, the response is 403 Forbidden.
       operationId: followUser
       responses:
-        "200":
+        201:
           description: User followed correctly
-        "401":
+        400:
+          description: User already followed
+        403:
+          description: You cannot follow yourself
+        401:
           { $ref: "#/components/responses/UnauthorizedError" }
-        "404":
-          description: User not found
+        404:
+          description: You are trying to follow a user that does not exist
       security:
         - bearerAuth: [ ]
     delete:
       tags: [ "social" ]
       summary: Unfollow a user
       description: |-
-        Remove the follow relationship between the user with the id
-        specified by the user in the authorization header.
+        Remove the follow relationship between the user with the username specified in the 
+        path and the user in the authorization header. 
+        If the user does not exist, the response is 404 Not Found.
+        If the user is not followed, the response is 400 Bad Request.
+        If the token in the header is not valid, the response is 401 Unauthorized.
+        If you try to unfollow yourself, the response is 403 Forbidden.
       operationId: unfollowUser
       responses:
-        200:
+        204:
           description: User unfollowed correctly
+        400:
+          description: User not followed
+        403:
+          description: You cannot unfollow yourself
         401:
           { $ref: "#/components/responses/UnauthorizedError" }
         404:
@@ -365,11 +374,20 @@ paths:
       summary: Ban an user
       description: |-
         Ban the user specified for the user with the id specified
-        by the user in the authorization header.
+        by the user in the authorization header. 
+        It will be added to the list of banned users of the user in the authorization header.
+        If the user does not exist, the response is 404 Not Found.
+        If the user is already banned, the response is 400 Bad Request.
+        If the token in the header is not valid, the response is 401 Unauthorized.
+        If the user tries to ban himself, the response is 403 Forbidden.
       operationId: banUser
       responses:
-        200:
+        201:
           description: User banned correctly
+        400:
+          description: User already banned
+        403:
+          description: You cannot ban yourself
         401:
           { $ref: "#/components/responses/UnauthorizedError" }
         404:
@@ -384,19 +402,24 @@ paths:
       description: |-
         Remove the user passed in the path from the banned
         list of the user with the authorization header.
+        If the user does not exist, the response is 404 Not Found.
+        If you try to unban yourself, the response is 403 Forbidden.
+        If the user is not banned, the response is 400 Bad Request.
+        If the token in the header is not valid, the response is 401 Unauthorized.
       operationId: unbanUser
       responses:
-        200:
-          description: "User unbanned correctly"
-        404:
-          description: "User not found"
+        204:
+          description: User unbanned correctly
         400:
-          description: "User not banned"
+          description: User not banned
+        404:
+          description: User not found
+        403:
+          description: You cannot unban yourself
         401:
           { $ref: "#/components/responses/UnauthorizedError" }
       security:
         - bearerAuth: [ ]
-
 
   /photos/{photoId}/likes:
     parameters:
@@ -406,38 +429,41 @@ paths:
       summary: Add a like to a photo
       description: |-
         Add a like to the photo passed in the path, from the user specified in the authorization header.
-        If the user already liked the photo, return an error.
-        The user must be logged in.
+        The user must be logged in. If the user is not logged in, the response is 401 Unauthorized.
+        If the photo does not exist, the response is 404 Not Found.
+        If the user has already liked the photo, the response is 400 Bad Request.
       operationId: likePhoto
       responses:
-        200:
+        201:
           description: Like added successfully
         401:
           { $ref: "#/components/responses/UnauthorizedError" }
         404:
           description: Photo not found
+        400:
+          description: You have already liked this photo
       security:
         - bearerAuth: [ ]
     delete:
       tags: [ "photos interactions" ]
       summary: Remove the like from the photo
       description: |-
-        If the photo exists and a like was added, it will be removed.
-        If the photo exists and there were no like or no photo is targeted,
-        nothing happens.
+        Removes the like from the photo passed in the path, from the user specified in the authorization header.
+        The user must be logged in. If the user is not logged in, the response is 401 Unauthorized.
+        If the photo does not exist, the response is 404 Not Found.
+        If the user has not liked the photo, the response is 400 Bad Request.
       operationId: unlikePhoto
       responses:
-        "200":
+        204:
           description: Like removed successfully
-        "400":
+        400:
           description: Like not found
-        "401":
+        401:
           { $ref: "#/components/responses/UnauthorizedError" }
-        "404":
+        404:
           description: Photo not found
       security:
         - bearerAuth: [ ]
-
   /photos/{photoId}/comments:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
@@ -447,6 +473,7 @@ paths:
       description: |-
         Return the comments of the photo passed in the path.
         There is no need to be logged in to see the comments.
+        If the photo does not exist, the response is 404 Not Found.
       operationId: getPhotoComments
       responses:
         200:
@@ -456,7 +483,7 @@ paths:
               schema:
                 type: array
                 items:
-                  { $ref: "#/components/schemas/Comment" }
+                  $ref: "#/components/schemas/Comment"
         404:
           description: Photo not found
     post:
@@ -465,8 +492,9 @@ paths:
       description: |-
         Post a comment for the photo passed in the path,
         from the user specified in the authorization header.
-        If the photo does not exist, return an error.
         The user must be logged in.
+        If the photo does not exist, returns 404 Not Found.
+        If the user is not logged in, returns 401 Unauthorized.
       operationId: commentPhoto
       requestBody:
         content:
@@ -474,8 +502,8 @@ paths:
             schema:
               { $ref: "#/components/schemas/Comment" }
       responses:
-        200:
-          description: Comment posted successfully
+        201:
+          description: Comment created successfully
         401:
           $ref: "#/components/responses/UnauthorizedError"
         404:
@@ -485,14 +513,14 @@ paths:
 
   /comments/{commentId}:
     parameters:
-      - { $ref: "#/components/parameters/CommentId" }
+      - $ref: "#/components/parameters/CommentId"
     get:
       tags: [ "comments" ]
       summary: Returns a comment
       description: |-
         Return the comment passed in the path.
         There is no need to be logged in to see the comment.
-        If the comment does not exist, return an error.
+        If the comment does not exist, returns 404 Not Found.
       operationId: getComment
       responses:
         200:
@@ -500,25 +528,27 @@ paths:
           content:
             application/json:
               schema:
-                { $ref: "#/components/schemas/Comment" }
-        401:
-          { $ref: "#/components/responses/UnauthorizedError" }
+                $ref: "#/components/schemas/Comment"
         404:
           description: Comment not found
     delete:
       tags: [ "comments" ]
       summary: Delete a comment
       description: |-
-        Delete the comment passed in the path,
-        from the user specified in the authorization header.
-        If the comment does not exist, return an error.
+        Delete the comment passed in the path only if the user in the authorization header
+        is the author of the comment.
         The user must be logged in.
+        If the comment does not exist, returns 404 Not Found.
+        If the user is not logged in, returns 401 Unauthorized.
+        If the user is not the author of the comment, returns 403 Forbidden.
       operationId: uncommentPhoto
       responses:
         200:
           description: Comment removed successfully from the photo
         401:
-          { $ref: "#/components/responses/UnauthorizedError" }
+          $ref: "#/components/responses/UnauthorizedError"
+        403:
+          description: You cannot delete a comment that is not yours
         404:
           description: Comment not found
       security:
