@@ -74,7 +74,7 @@ components:
         img:
           type: string
           format: binary
-        creationDate:
+        createdAt:
           type: string
           format: date-time
         numberOfLikes:
@@ -127,7 +127,7 @@ components:
         content:
           type: string
           example: "Nice photo!"
-        creationDate:
+        createdAt:
           type: string
           format: date-time
 paths:
