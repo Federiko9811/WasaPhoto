@@ -71,10 +71,11 @@ components:
       description: The resource is deleted
   parameters:
     UserId:
+      name: id
       schema:
         type: integer
         example: 1
-      name: id
+        description: The user id
       in: path
       required: true
       description: The unique user identifier
@@ -83,6 +84,7 @@ components:
       schema:
         type: integer
         example: 1
+        description: The photo id
       in: path
       required: true
       description: The unique photo identifier
@@ -91,14 +93,16 @@ components:
       schema:
         type: integer
         example: 1
+        description: The comment id
       in: path
       required: true
       description: The unique comment identifier
     Username:
+      name: username
       schema:
         type: string
         example: Federiko98
-      name: username
+        description: The username
       in: path
       required: true
       description: Username of the user decided by the user during the registration
@@ -109,16 +113,29 @@ components:
       pattern: 'ˆ.*?$'
       minLength: 3
       maxLength: 16
+      description: Username of the user decided by the user during the registration
     User:
       title: User
       description: User object for the app WASAPhoto
+      example:
+        id: 1
+        username: Federiko98
       type: object
       properties:
         id:
           type: integer
           example: 1
-        name: { $ref: "#/components/schemas/Username" }
+        username: { $ref: "#/components/schemas/Username" }
     Photo:
+      title: Photo
+      description: Photo object for the app WASAPhoto
+      example:
+        id: 1
+        owner: { $ref: "#/components/schemas/Username" }
+        img: "0010010101001010101010"
+        createdAt: "2021-12-12T12:12:12.000Z"
+        numberOfLikes: 220
+        numberOfComments: 10
       type: object
       properties:
         id:
@@ -141,6 +158,8 @@ components:
     Photos:
       title: Photos
       type: array
+      description: List of photos
+      example: [{ $ref: "#/components/schemas/Photo" }]
       items:
         $ref: "#/components/schemas/Photo"
     UserProfilePage:
@@ -148,6 +167,7 @@ components:
       description: |-
         This is the user profile page
         It contains the user information and the photos uploaded by the user
+      example: { $ref: "#/components/schemas/User" }
       type: object
       properties:
         id:
@@ -169,9 +189,19 @@ components:
           type: integer
           example: 400
     Image:
+      title: Image
+      description: Image object for the app WASAPhoto
+      example: "0010010101001010101010"
       type: string
       format: binary
     Comment:
+      title: Comment
+      description: Comment object for the app WASAPhoto
+      example:
+        id: 1
+        owner: { $ref: "#/components/schemas/Username" }
+        content: "This is a comment"
+        createdAt: "2021-12-12T12:12:12.000Z"
       type: object
       properties:
         id:
@@ -275,13 +305,7 @@ paths:
         - bearerAuth: [ ]
   /search/{string}:
     parameters:
-      - in: path
-        name: string
-        schema:
-          type: string
-          example: "Fede"
-        required: true
-        description: String to match with the username
+      - { $ref: "#/components/parameters/Username" }
     get:
       tags: [ "profile" ]
       summary: Get the list of all users with the username matching the string
@@ -408,9 +432,9 @@ paths:
       security:
         - bearerAuth: [ ]
   /ban/{username}:
+    parameters:
+      - { $ref: "#/components/parameters/Username" }
     post:
-      parameters:
-        - { $ref: "#/components/parameters/Username" }
       tags: [ "social" ]
       summary: Ban an user
       description: |-
@@ -431,8 +455,6 @@ paths:
       security:
         - bearerAuth: [ ]
     delete:
-      parameters:
-        - { $ref: "#/components/parameters/Username" }
       tags: [ "social" ]
       summary: Remove a ban
       description: |-
@@ -564,7 +586,6 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-
     delete:
       tags: [ "comments" ]
       summary: Delete a comment
