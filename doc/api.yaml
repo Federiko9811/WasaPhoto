@@ -504,8 +504,7 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-
-  /photos/{photoId}/likes:
+  /photos/{photoId}/like:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     post:
@@ -568,6 +567,9 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
+  /photos/{photoId}/comment:
+    parameters:
+      - { $ref: "#/components/parameters/PhotoId" }
     post:
       tags: [ "photos interactions" ]
       summary: Create a comment for a photo
