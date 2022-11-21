@@ -93,6 +93,7 @@ components:
             type: object
             properties:
               identifier:
+                description: The identifier of the user
                 type: integer
                 example: 1
   parameters:
@@ -347,6 +348,7 @@ paths:
           content:
             application/json:
               schema:
+                description: List of users
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
@@ -370,6 +372,7 @@ paths:
           content:
             application/json:
               schema:
+                description: User photos stream
                 type: array
                 items:
                   $ref: "#/components/schemas/Photo"
@@ -388,6 +391,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              description: Photo to upload
               type: object
               properties:
                 image: { $ref: "#/components/schemas/Image" }
