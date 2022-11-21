@@ -5,6 +5,15 @@ info:
     This is the app for Wasa Project 2022/23
     Federico Raponi 1963339
   version: "1.0"
+tags:
+  - name: profile
+    description: Operations about profile
+  - name: photos interactions
+    description: Operations about photo
+  - name: social
+    description: Social operations
+  - name: comments
+    description: Operations about comments
 components:
   securitySchemes:
     bearerAuth:
@@ -18,6 +27,7 @@ components:
         application/json:
           schema:
             type: object
+            description: The error message
             properties:
               message:
                 type: string
@@ -29,6 +39,7 @@ components:
         application/json:
           schema:
             type: object
+            description: The error message
             properties:
               message:
                 type: string
@@ -40,6 +51,7 @@ components:
         application/json:
           schema:
             type: object
+            description: The error message
             properties:
               message:
                 type: string
@@ -51,6 +63,7 @@ components:
         application/json:
           schema:
             type: object
+            description: The error message
             properties:
               message:
                 type: string
@@ -61,14 +74,27 @@ components:
       content:
         application/json:
           schema:
+            description: The message of the resource creation
             type: object
             properties:
               message:
                 type: string
                 description: success message
                 example: The resource is created
+            example: { "message": "The resource is created" }
     NoContentMessage:
       description: The resource is deleted
+    LoginMessage:
+      description: User log-in action successful
+      content:
+        application/json:
+          schema:
+            description: The message of the log-in action
+            type: object
+            properties:
+              identifier:
+                type: integer
+                example: 1
   parameters:
     UserId:
       name: id
@@ -124,6 +150,7 @@ components:
       properties:
         id:
           type: integer
+          description: The unique user identifier
           example: 1
         username: { $ref: "#/components/schemas/Username" }
     Photo:
@@ -139,20 +166,25 @@ components:
       type: object
       properties:
         id:
+          description: The unique photo identifier
           type: integer
           example: 1
         owner:
           $ref: "#/components/schemas/User"
         img:
+          description: The image of the photo
           type: string
           format: binary
         createdAt:
+          description: The date of the creation of the photo
           type: string
           format: date-time
         numberOfLikes:
+          description: The number of likes of the photo
           type: integer
           example: 200
         numberOfComments:
+          description: The number of comments of the photo
           type: integer
           example: 20
     Photos:
@@ -205,14 +237,17 @@ components:
       type: object
       properties:
         id:
+          description: The unique comment identifier
           type: integer
           example: 1
         owner:
           { $ref: "#/components/schemas/Username" }
         content:
+          description: The content of the comment
           type: string
           example: "Nice photo!"
         createdAt:
+          description: The date of the creation of the comment
           type: string
           format: date-time
 paths:
@@ -230,21 +265,13 @@ paths:
         content:
           application/json:
             schema:
+              description: User details
               type: object
               properties:
                 name: { $ref: "#/components/schemas/Username" }
         required: true
       responses:
-        201:
-          description: User log-in action successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  identifier:
-                    type: integer
-                    example: 1
+        201: { $ref: "#/components/responses/LoginMessage" }
 
   /update-profile-username:
     put:
@@ -303,7 +330,7 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /search/{string}:
+  /search/{username}:
     parameters:
       - { $ref: "#/components/parameters/Username" }
     get:
@@ -527,7 +554,9 @@ paths:
           content:
             application/json:
               schema:
+                description: List of Comments
                 type: array
+                example: [ { "id": 1, "owner": "Federiko98", "content": "test content", "createdAt": "2021-12-12T12:12:12.000Z" } ]
                 items:
                   $ref: "#/components/schemas/Comment"
         401: { $ref: "#/components/responses/UnauthorizedError" }
