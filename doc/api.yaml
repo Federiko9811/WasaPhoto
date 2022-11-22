@@ -96,6 +96,57 @@ components:
                 description: The identifier of the user
                 type: integer
                 example: 1
+    UpdateUsername:
+      description: Username updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Success
+                example: Modifica avvenuta con successo
+    UserProfilePage:
+      description: User profile page
+      content:
+        application/json:
+          schema:
+            { $ref: "#/components/schemas/UserProfilePage" }
+    UsersList:
+      description: User profile list
+      content:
+        application/json:
+          schema:
+            description: List of users
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+    Photos:
+      description: User photos stream
+      content:
+        application/json:
+          schema:
+            description: User photos stream
+            type: array
+            items:
+              $ref: "#/components/schemas/Photo"
+    Comments:
+      description: List of Comments retrieved successfully
+      content:
+        application/json:
+          schema:
+            description: List of Comments
+            type: array
+            example: [ { "id": 1, "owner": "Federiko98", "content": "test content", "createdAt": "2021-12-12T12:12:12.000Z" } ]
+            items:
+              $ref: "#/components/schemas/Comment"
+    Comment:
+      description: Comment retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Comment"
   parameters:
     UserId:
       name: id
@@ -192,7 +243,7 @@ components:
       title: Photos
       type: array
       description: List of photos
-      example: [{ $ref: "#/components/schemas/Photo" }]
+      example: [ { $ref: "#/components/schemas/Photo" } ]
       items:
         $ref: "#/components/schemas/Photo"
     UserProfilePage:
@@ -290,17 +341,7 @@ paths:
             schema:
               $ref: "#/components/schemas/User"
       responses:
-        200:
-          description: Username updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Success
-                    example: Modifica avvenuta con successo
+        200: { $ref: "#/components/responses/UpdateUsername" }
         400: { $ref: '#/components/responses/BadRequestError' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
       security:
@@ -320,12 +361,7 @@ paths:
         If the user does not exist, the response is 404 Not Found.
       operationId: getUserProfile
       responses:
-        200:
-          description: User profile page
-          content:
-            application/json:
-              schema:
-                { $ref: "#/components/schemas/UserProfilePage" }
+        200: { $ref: "#/components/responses/UserProfilePage" }
         401: { $ref: '#/components/responses/UnauthorizedError' }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
@@ -343,15 +379,7 @@ paths:
         If the string is empty or don't match, the response is 404 Not Found.
       operationId: getUsersList
       responses:
-        200:
-          description: User profile list
-          content:
-            application/json:
-              schema:
-                description: List of users
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+        200: { $ref: "#/components/responses/UsersList" }
         401: { $ref: '#/components/responses/UnauthorizedError' }
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
@@ -367,15 +395,7 @@ paths:
         If the token in the header is not valid, the response is 401 Unauthorized.
       operationId: getMyStream
       responses:
-        200:
-          description: User photos stream
-          content:
-            application/json:
-              schema:
-                description: User photos stream
-                type: array
-                items:
-                  $ref: "#/components/schemas/Photo"
+        200: { $ref: "#/components/responses/Photos" }
         401: { $ref: "#/components/responses/UnauthorizedError" }
       security:
         - bearerAuth: [ ]
@@ -504,7 +524,7 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/{photoId}/like:
+  /photos/{photoId}/likes/:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     post:
@@ -539,7 +559,7 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/{photoId}/comments:
+  /photos/{photoId}/comments/:
     parameters:
       - { $ref: "#/components/parameters/PhotoId" }
     get:
@@ -552,24 +572,12 @@ paths:
         If the photo does not exist, the response is 404 Not Found.
       operationId: getPhotoComments
       responses:
-        200:
-          description: List of Comments retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: List of Comments
-                type: array
-                example: [ { "id": 1, "owner": "Federiko98", "content": "test content", "createdAt": "2021-12-12T12:12:12.000Z" } ]
-                items:
-                  $ref: "#/components/schemas/Comment"
+        200: { $ref: '#/components/responses/Comments' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/{photoId}/comment:
-    parameters:
-      - { $ref: "#/components/parameters/PhotoId" }
     post:
       tags: [ "photos interactions" ]
       summary: Create a comment for a photo
@@ -610,12 +618,7 @@ paths:
         If the comment does not exist, returns 404 Not Found.
       operationId: getComment
       responses:
-        200:
-          description: Comment retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Comment"
+        200: { $ref: '#/components/responses/Comment' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
