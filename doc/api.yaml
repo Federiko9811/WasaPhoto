@@ -27,7 +27,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorMessage'
-
     NotFoundError:
       description: The resource is not found
       content:
@@ -113,6 +112,15 @@ components:
           schema:
             $ref: "#/components/schemas/Comment"
   parameters:
+    AuthenticatedUserId:
+      name: userId
+      schema:
+        type: integer
+        example: 1
+        description: The user id
+      in: path
+      required: true
+      description: The user id
     PhotoId:
       name: photoId
       schema:
@@ -122,6 +130,15 @@ components:
       in: path
       required: true
       description: The unique photo identifier
+    LikeId:
+      name: likeId
+      schema:
+        type: integer
+        example: 1
+        description: The like id
+      in: path
+      required: true
+      description: The unique like identifier
     CommentId:
       name: commentId
       schema:
@@ -348,7 +365,9 @@ paths:
       responses:
         201: { $ref: "#/components/responses/LoginMessage" }
 
-  /update-profile-username:
+  /user/{authenticatedUserId}/update-username:
+    parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
     put:
       tags: [ "profile" ]
       summary: Update the username
@@ -390,6 +409,7 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
+
   /search/{username}:
     parameters:
       - { $ref: "#/components/parameters/Username" }
@@ -407,7 +427,10 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/:
+
+  /user/{authenticatedUserId}/photos/:
+    parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
     get:
       tags: [ "photos interactions" ]
       summary: Returns the photos of the followed users
@@ -445,8 +468,9 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /photos/{photoId}/:
+  /user/{authenticatedUserId}/photos/{photoId}/:
     parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/PhotoId" }
     delete:
       tags: [ "photos interactions" ]
@@ -464,10 +488,11 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /follow/{username}:
+  /user/{authenticatedUserId}/follow/{username}:
     parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/Username" }
-    post:
+    put:
       tags: [ "social" ]
       summary: Follow an user
       description: |-
@@ -505,10 +530,12 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /ban/{username}:
+
+  /user/{authenticatedUserId}/ban/{username}:
     parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/Username" }
-    post:
+    put:
       tags: [ "social" ]
       summary: Ban an user
       description: |-
@@ -547,10 +574,13 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/{photoId}/likes/:
+
+  /user/{username}/photos/{photoId}/likes/{authenticatedUserId}:
     parameters:
+      - { $ref: "#/components/parameters/Username" }
       - { $ref: "#/components/parameters/PhotoId" }
-    post:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
+    put:
       tags: [ "photos interactions" ]
       summary: Add a like to a photo
       description: |-
@@ -582,9 +612,12 @@ paths:
         404: { $ref: '#/components/responses/NotFoundError' }
       security:
         - bearerAuth: [ ]
-  /photos/{photoId}/comments/:
+
+  /user/{username}/photos/{photoId}/comments/{authenticatedUserId}:
     parameters:
+      - { $ref: "#/components/parameters/Username" }
       - { $ref: "#/components/parameters/PhotoId" }
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
     get:
       tags: [ "photos interactions" ]
       summary: Returns the comments of a photo
@@ -627,9 +660,11 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /comments/{commentId}:
+  /user/{username}/photos/{photoId}/comments/{commentId}:
     parameters:
-      - $ref: "#/components/parameters/CommentId"
+      - { $ref: "#/components/parameters/Username" }
+      - { $ref: "#/components/parameters/CommentId" }
+      - { $ref: "#/components/parameters/PhotoId" }
     get:
       tags: [ "comments" ]
       summary: Returns a comment
