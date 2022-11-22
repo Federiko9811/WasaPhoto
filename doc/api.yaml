@@ -26,62 +26,32 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            description: The error message
-            properties:
-              message:
-                type: string
-                description: error message
-                example: The token is not valid, or the user is not authorized to access the resource
+            $ref: '#/components/schemas/ErrorMessage'
+
     NotFoundError:
       description: The resource is not found
       content:
         application/json:
           schema:
-            type: object
-            description: The error message
-            properties:
-              message:
-                type: string
-                description: error message
-                example: The resource is not found
+            $ref: '#/components/schemas/ErrorMessage'
     BadRequestError:
       description: The request is not valid
       content:
         application/json:
           schema:
-            type: object
-            description: The error message
-            properties:
-              message:
-                type: string
-                description: error message
-                example: The request is not valid
+            $ref: '#/components/schemas/ErrorMessage'
     ForbiddenError:
       description: The user is not authorized to access the resource
       content:
         application/json:
           schema:
-            type: object
-            description: The error message
-            properties:
-              message:
-                type: string
-                description: error message
-                example: The user is not authorized to access the resource
+            $ref: '#/components/schemas/ForbiddenError'
     CreatedMessage:
       description: The resource is created
       content:
         application/json:
           schema:
-            description: The message of the resource creation
-            type: object
-            properties:
-              message:
-                type: string
-                description: success message
-                example: The resource is created
-            example: { "message": "The resource is created" }
+            $ref: '#/components/schemas/CreatedMessage'
     NoContentMessage:
       description: The resource is deleted
     LoginMessage:
@@ -89,24 +59,13 @@ components:
       content:
         application/json:
           schema:
-            description: The message of the log-in action
-            type: object
-            properties:
-              identifier:
-                description: The identifier of the user
-                type: integer
-                example: 1
+            $ref: '#/components/schemas/UserIdentifier'
     UpdateUsername:
       description: Username updated successfully
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                description: Success
-                example: Modifica avvenuta con successo
+            $ref: '#/components/schemas/UpdateMessage'
     UserProfilePage:
       description: User profile page
       content:
@@ -120,6 +79,8 @@ components:
           schema:
             description: List of users
             type: array
+            minItems: 0
+            maxItems: 999999
             items:
               $ref: "#/components/schemas/User"
     Photos:
@@ -129,6 +90,8 @@ components:
           schema:
             description: User photos stream
             type: array
+            minItems: 0
+            maxItems: 999999
             items:
               $ref: "#/components/schemas/Photo"
     Comments:
@@ -138,6 +101,8 @@ components:
           schema:
             description: List of Comments
             type: array
+            minItems: 0
+            maxItems: 999999
             example: [ { "id": 1, "owner": "Federiko98", "content": "test content", "createdAt": "2021-12-12T12:12:12.000Z" } ]
             items:
               $ref: "#/components/schemas/Comment"
@@ -148,15 +113,6 @@ components:
           schema:
             $ref: "#/components/schemas/Comment"
   parameters:
-    UserId:
-      name: id
-      schema:
-        type: integer
-        example: 1
-        description: The user id
-      in: path
-      required: true
-      description: The unique user identifier
     PhotoId:
       name: photoId
       schema:
@@ -226,6 +182,8 @@ components:
         img:
           description: The image of the photo
           type: string
+          minLength: 1
+          maxLength: 999999999999
           format: binary
         createdAt:
           description: The date of the creation of the photo
@@ -242,6 +200,8 @@ components:
     Photos:
       title: Photos
       type: array
+      minItems: 0
+      maxItems: 999999
       description: List of photos
       example: [ { $ref: "#/components/schemas/Photo" } ]
       items:
@@ -277,6 +237,8 @@ components:
       description: Image object for the app WASAPhoto
       example: "0010010101001010101010"
       type: string
+      minLength: 1
+      maxLength: 999999999999
       format: binary
     Comment:
       title: Comment
@@ -297,11 +259,72 @@ components:
         content:
           description: The content of the comment
           type: string
+          minLength: 1
+          maxLength: 2048
           example: "Nice photo!"
         createdAt:
           description: The date of the creation of the comment
           type: string
+          minLength: 1
+          maxLength: 2048
           format: date-time
+    ErrorMessage:
+      title: Error
+      type: object
+      description: The error message
+      example: { "message": "Error message" }
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: error message
+          example: The token is not valid, or the user is not authorized to access the resource
+    ForbiddenError:
+      title: ForbiddenError
+      type: object
+      description: The error message
+      example: { "message": "Forbidden action" }
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: error message
+          example: The user is not authorized to access the resource
+    CreatedMessage:
+      title: Creation Message
+      description: The message of the resource creation
+      example: { "message": "The resource is created" }
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: success message
+          example: The resource is created
+    UserIdentifier:
+      title: User Identifier
+      description: The message of the log-in action
+      type: object
+      properties:
+        identifier:
+          description: The identifier of the user
+          type: integer
+          example: 1
+    UpdateMessage:
+      title: Update Message
+      description: The message of the resource update
+      type: object
+      example: { "message": "The resource is updated" }
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2048
+          description: Success
+          example: Modifica avvenuta con successo
 paths:
   /session:
     post:
