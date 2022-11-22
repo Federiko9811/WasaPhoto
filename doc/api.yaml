@@ -161,7 +161,7 @@ components:
     Username:
       type: string
       example: Federiko98
-      pattern: 'ˆ.*?$'
+      pattern: '^[a-zA-Z0-9_.]*$'
       minLength: 3
       maxLength: 16
       description: Username of the user decided by the user during the registration
@@ -169,14 +169,9 @@ components:
       title: User
       description: User object for the app WASAPhoto
       example:
-        id: 1
         username: Federiko98
       type: object
       properties:
-        id:
-          type: integer
-          description: The unique user identifier
-          example: 1
         username: { $ref: "#/components/schemas/Username" }
     Photo:
       title: Photo
@@ -276,6 +271,7 @@ components:
         content:
           description: The content of the comment
           type: string
+          pattern: '^[a-zA-Z0-9_.]*$'
           minLength: 1
           maxLength: 2048
           example: "Nice photo!"
@@ -293,6 +289,7 @@ components:
       properties:
         message:
           type: string
+          pattern: '^[a-zA-Z0-9_.]*$'
           minLength: 1
           maxLength: 2048
           description: error message
@@ -305,6 +302,7 @@ components:
       properties:
         message:
           type: string
+          pattern: '^[a-zA-Z0-9_.]*$'
           minLength: 1
           maxLength: 2048
           description: error message
@@ -317,6 +315,7 @@ components:
       properties:
         message:
           type: string
+          pattern: '^[a-zA-Z0-9_.]*$'
           minLength: 1
           maxLength: 2048
           description: success message
@@ -338,6 +337,7 @@ components:
       properties:
         message:
           type: string
+          pattern: '^[a-zA-Z0-9_.]*$'
           minLength: 1
           maxLength: 2048
           description: Success
