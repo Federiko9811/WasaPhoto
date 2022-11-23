@@ -113,7 +113,7 @@ components:
             $ref: "#/components/schemas/Comment"
   parameters:
     AuthenticatedUserId:
-      name: userId
+      name: authenticatedUserId
       schema:
         type: integer
         example: 1
