@@ -613,7 +613,7 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /user/{username}/photos/{photoId}/comments/{authenticatedUserId}:
+  /user/{username}/photos/{photoId}/comments/owner/{authenticatedUserId}:
     parameters:
       - { $ref: "#/components/parameters/Username" }
       - { $ref: "#/components/parameters/PhotoId" }
@@ -663,8 +663,8 @@ paths:
   /user/{username}/photos/{photoId}/comments/{commentId}:
     parameters:
       - { $ref: "#/components/parameters/Username" }
-      - { $ref: "#/components/parameters/CommentId" }
       - { $ref: "#/components/parameters/PhotoId" }
+      - { $ref: "#/components/parameters/CommentId" }
     get:
       tags: [ "comments" ]
       summary: Returns a comment
