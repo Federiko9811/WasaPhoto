@@ -130,15 +130,6 @@ components:
       in: path
       required: true
       description: The unique photo identifier
-    LikeId:
-      name: likeId
-      schema:
-        type: integer
-        example: 1
-        description: The like id
-      in: path
-      required: true
-      description: The unique like identifier
     CommentId:
       name: commentId
       schema:
@@ -153,6 +144,9 @@ components:
       schema:
         type: string
         example: Federiko98
+        pattern: '^[a-zA-Z0-9_.]'
+        minLength: 3
+        maxLength: 16
         description: The username
       in: path
       required: true
@@ -161,7 +155,7 @@ components:
     Username:
       type: string
       example: Federiko98
-      pattern: '^[a-zA-Z0-9_.]*$'
+      pattern: '^[a-zA-Z0-9_.]'
       minLength: 3
       maxLength: 16
       description: Username of the user decided by the user during the registration
@@ -271,10 +265,10 @@ components:
         content:
           description: The content of the comment
           type: string
-          pattern: '^[a-zA-Z0-9_.]*$'
+          pattern: '^[a-zA-Z0-9_.]'
           minLength: 1
           maxLength: 2048
-          example: "Nice photo!"
+          example: "Nice photo"
         createdAt:
           description: The date of the creation of the comment
           type: string
@@ -289,7 +283,7 @@ components:
       properties:
         message:
           type: string
-          pattern: '^[a-zA-Z0-9_.]*$'
+          pattern: '^[a-zA-Z0-9_.]'
           minLength: 1
           maxLength: 2048
           description: error message
@@ -302,7 +296,7 @@ components:
       properties:
         message:
           type: string
-          pattern: '^[a-zA-Z0-9_.]*$'
+          pattern: '^[a-zA-Z0-9_.]'
           minLength: 1
           maxLength: 2048
           description: error message
@@ -315,7 +309,7 @@ components:
       properties:
         message:
           type: string
-          pattern: '^[a-zA-Z0-9_.]*$'
+          pattern: '^[a-zA-Z0-9_.]'
           minLength: 1
           maxLength: 2048
           description: success message
@@ -337,7 +331,7 @@ components:
       properties:
         message:
           type: string
-          pattern: '^[a-zA-Z0-9_.]*$'
+          pattern: '^[a-zA-Z0-9_.]'
           minLength: 1
           maxLength: 2048
           description: Success
