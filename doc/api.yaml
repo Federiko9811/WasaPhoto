@@ -164,7 +164,7 @@ components:
       description: Photo object for the app WASAPhoto
       example:
         id: 1
-        owner: { $ref: "#/components/schemas/Username" }
+        owner: Federiko98
         img: 1
         createdAt: "2021-12-12T12:12:12.000Z"
         numberOfLikes: 220
@@ -176,7 +176,7 @@ components:
           type: integer
           example: 1
         owner:
-          $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/Username"
         img:
           description: Photo Id
           type: integer
@@ -240,7 +240,7 @@ components:
       description: Comment object for the app WASAPhoto
       example:
         id: 1
-        owner: { $ref: "#/components/schemas/Username" }
+        owner: Federiko98
         content: "This is a comment"
         createdAt: "2021-12-12T12:12:12.000Z"
       type: object
@@ -250,7 +250,7 @@ components:
           type: integer
           example: 1
         owner:
-          { $ref: "#/components/schemas/Username" }
+          $ref: "#/components/schemas/Username"
         content:
           description: The content of the comment
           type: string
@@ -364,7 +364,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/Username"
       responses:
         200: { $ref: "#/components/responses/UpdateUsername" }
         400: { $ref: '#/components/responses/BadRequestError' }
@@ -459,7 +459,7 @@ paths:
       tags: [ "photos interactions" ]
       summary: Delete the photo
       description: |-
-        Delete the photo passed in the path only if the user is 
+        Delete the photo passed in the path only if the user is
         the owner of the photo, checking the token in the header.
         If the user is not the owner of the photo, the response is 401 Unauthorized.
         If the photo does not exist, the response is 404 Not Found.
@@ -498,8 +498,8 @@ paths:
       tags: [ "social" ]
       summary: Unfollow a user
       description: |-
-        Remove the follow relationship between the user with the username specified in the 
-        path and the user in the authorization header. 
+        Remove the follow relationship between the user with the username specified in the
+        path and the user in the authorization header.
         If the user is not followed, the response is 400 Bad Request.
         If the token in the header is not valid, the response is 401 Unauthorized.
         If you try to unfollow yourself, the response is 403 Forbidden.
@@ -523,7 +523,7 @@ paths:
       summary: Ban an user
       description: |-
         Ban the user specified for the user with the id specified
-        by the user in the authorization header. 
+        by the user in the authorization header.
         It will be added to the list of banned users of the user in the authorization header.
         If the user is already banned, the response is 400 Bad Request.
         If the token in the header is not valid, the response is 401 Unauthorized.
