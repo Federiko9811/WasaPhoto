@@ -165,7 +165,7 @@ components:
       example:
         id: 1
         owner: { $ref: "#/components/schemas/Username" }
-        img: "0010010101001010101010"
+        img: 1
         createdAt: "2021-12-12T12:12:12.000Z"
         numberOfLikes: 220
         numberOfComments: 10
@@ -178,11 +178,9 @@ components:
         owner:
           $ref: "#/components/schemas/User"
         img:
-          description: The image of the photo
-          type: string
-          minLength: 1
-          maxLength: 999999999999
-          format: binary
+          description: Photo Id
+          type: integer
+          example: 1
         createdAt:
           description: The date of the creation of the photo
           type: string
@@ -233,7 +231,6 @@ components:
     Image:
       title: Image
       description: Image object for the app WASAPhoto
-      example: "0010010101001010101010"
       type: string
       minLength: 1
       maxLength: 999999999999
