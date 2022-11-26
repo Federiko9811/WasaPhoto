@@ -36,3 +36,22 @@ func (db *appdbimpl) addUser(username string) (int64, error) {
 	token, err = row.LastInsertId()
 	return token, err
 }
+
+// SetUserName sets the username for the given user token.
+func (db *appdbimpl) SetUserName(token int64, username string) error {
+	_, err := db.c.Exec("UPDATE user SET username=? WHERE token=?", username, token)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CheckToken checks if the token exist.
+func (db *appdbimpl) CheckToken(token int64) bool {
+	var count int64
+	err := db.c.QueryRow("SELECT COUNT(*) FROM user WHERE token=?", token).Scan(&count)
+	if err != nil {
+		return false
+	}
+	return count == 1
+}

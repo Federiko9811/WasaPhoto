@@ -7,3 +7,7 @@ type Username struct {
 type Token struct {
 	Identifier int64 `json:"identifier"`
 }
+
+type Message struct {
+	Message string `json:"message"`
+}

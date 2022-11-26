@@ -39,6 +39,8 @@ import (
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 	GetUserToken(username string) (int64, error)
+	SetUserName(token int64, username string) error
+	CheckToken(token int64) bool
 	Ping() error
 }
 

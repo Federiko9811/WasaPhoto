@@ -11,6 +11,7 @@ func (rt *_router) Handler() http.Handler {
 
 	//PROFILE
 	rt.router.POST("/session", rt.doLogin)
+	rt.router.PUT("/user/:authenticatedUserId/update-username", rt.setMyUserName)
 
 	return rt.router
 }

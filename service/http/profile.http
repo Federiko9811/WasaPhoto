@@ -5,3 +5,12 @@ Content-Type: application/json
 {
 	"name": "Alessio5"
 }
+
+### SetMyUserName (Funzionante)
+PUT http://localhost:3000/user/1/update-username
+Content-Type: application/json
+Authorization: Bearer 1
+
+{
+	"name": "Federiko98"
+}
