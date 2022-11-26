@@ -1,0 +1,7 @@
+### Session (Funzionante)
+POST http://localhost:3000/session
+Content-Type: application/json
+
+{
+	"name": "Alessio5"
+}
