@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"WasaPhoto/service/structs"
+	"encoding/json"
 	"errors"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
 	"strings"
@@ -33,4 +36,18 @@ func ReturnInternalServerError(w http.ResponseWriter, err error) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+}
+
+func ExtractTokenFromPath(w http.ResponseWriter, err error, ps httprouter.Params) int64 {
+	pathToken, err := strconv.ParseInt(ps.ByName("authenticatedUserId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		res := structs.Message{
+			Message: "Not Valid Token in the Path",
+		}
+		err = json.NewEncoder(w).Encode(res)
+		ReturnInternalServerError(w, err)
+		return -1
+	}
+	return pathToken
 }

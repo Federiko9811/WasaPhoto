@@ -34,7 +34,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 	}
 }
 
-func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httprouter.Params, pathToken int64) {
 	w.Header().Set("content-type", "application/json")
 
 	// Decode request body
@@ -57,23 +57,8 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	// Get token from header
-	token, err := utils.ExtractToken(r)
-
-	// Check if token is valid
-	if !rt.db.CheckToken(token) || err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		rt.baseLogger.Errorf("Not Valid Token: %v", err)
-		res := structs.Message{
-			Message: "Not Valid Token",
-		}
-		err = json.NewEncoder(w).Encode(res)
-		utils.ReturnInternalServerError(w, err)
-		return
-	}
-
-	// Update username in database for the user with the given token
-	err = rt.db.SetUserName(token, username.Username)
+	//Update username in database for the user with the given token
+	err = rt.db.SetUserName(pathToken, username.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		rt.baseLogger.Errorf("Error setting username: %v", err)
