@@ -70,7 +70,7 @@ components:
       content:
         application/json:
           schema:
-            { $ref: "#/components/schemas/UserProfilePage" }
+            $ref: "#/components/schemas/UserProfilePage"
     UsersList:
       description: User profile list
       content:
@@ -99,7 +99,6 @@ components:
         image/jpeg:
           schema:
             $ref: '#/components/schemas/Image'
-
     Comments:
       description: List of Comments retrieved successfully
       content:
@@ -169,13 +168,6 @@ components:
     Photo:
       title: Photo
       description: Photo object for the app WASAPhoto
-      example:
-        id: 1
-        owner: Federiko98
-        img: 1
-        createdAt: "2021-12-12T12:12:12.000Z"
-        numberOfLikes: 220
-        numberOfComments: 10
       type: object
       properties:
         id:
@@ -206,7 +198,6 @@ components:
       minItems: 0
       maxItems: 999999
       description: List of photos
-      example: [ { $ref: "#/components/schemas/Photo" } ]
       items:
         $ref: "#/components/schemas/Photo"
     UserProfilePage:
@@ -214,7 +205,6 @@ components:
       description: |-
         This is the user profile page
         It contains the user information and the photos uploaded by the user
-      example: { $ref: "#/components/schemas/Username" }
       type: object
       properties:
         id:
