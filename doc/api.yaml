@@ -93,6 +93,13 @@ components:
             maxItems: 999999
             items:
               $ref: "#/components/schemas/Photo"
+    Photo:
+      description: The binary data of the photo
+      content:
+        image/jpeg:
+          schema:
+            $ref: '#/components/schemas/Image'
+
     Comments:
       description: List of Comments retrieved successfully
       content:
@@ -455,6 +462,20 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/PhotoId" }
+    get:
+      tags: [ "photos interactions" ]
+      summary: Get the photo
+      description: |-
+          Get the photo with the id specified in the path.
+          If the token in the header is not valid, the response is 401 Unauthorized.
+          If the photo does not exist, the response is 404 Not Found.
+      operationId: getPhoto
+      responses:
+          200: { $ref: "#/components/responses/Photo" }
+          401: { $ref: "#/components/responses/UnauthorizedError" }
+          404: { $ref: '#/components/responses/NotFoundError' }
+      security:
+          - bearerAuth: [ ]
     delete:
       tags: [ "photos interactions" ]
       summary: Delete the photo
