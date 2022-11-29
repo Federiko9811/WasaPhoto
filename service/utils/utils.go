@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -50,4 +51,18 @@ func ExtractTokenFromPath(w http.ResponseWriter, err error, ps httprouter.Params
 		return -1
 	}
 	return pathToken
+}
+
+func CheckUsernameRegex(w http.ResponseWriter, username string) bool {
+	match, err := regexp.Match(`^[a-zA-Z0-9_-]{3,16}$`, []byte(username))
+	if err != nil || !match {
+		w.WriteHeader(http.StatusBadRequest)
+		res := structs.Message{
+			Message: "Error matching regex: %v",
+		}
+		err = json.NewEncoder(w).Encode(res)
+		ReturnInternalServerError(w, err)
+		return false
+	}
+	return true
 }

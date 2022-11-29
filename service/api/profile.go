@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"regexp"
 )
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -34,6 +33,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 	}
 }
 
+// setProfile update the profile of the user
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httprouter.Params, pathToken int64) {
 	w.Header().Set("content-type", "application/json")
 
@@ -46,14 +46,8 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 
 	// check id username respect a regex
-	match, err := regexp.Match(`^[a-zA-Z0-9_-]{3,16}$`, []byte(username.Username))
-	if err != nil || !match {
-		w.WriteHeader(http.StatusBadRequest)
-		res := structs.Message{
-			Message: "Error matching regex: %v",
-		}
-		err = json.NewEncoder(w).Encode(res)
-		utils.ReturnInternalServerError(w, err)
+	match := utils.CheckUsernameRegex(w, username.Username)
+	if !match {
 		return
 	}
 
@@ -69,6 +63,29 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		Message: "Username updated",
 	}
 	err = json.NewEncoder(w).Encode(res)
+	utils.ReturnInternalServerError(w, err)
+	return
+}
+
+func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
+	w.Header().Set("content-type", "application/json")
+
+	username := p.ByName("username")
+	match := utils.CheckUsernameRegex(w, username)
+	if !match {
+		return
+	}
+
+	// Get user profile from database
+	profile, err := rt.db.GetUserProfile(username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		rt.baseLogger.Errorf("Error setting username: %v", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(profile)
 	utils.ReturnInternalServerError(w, err)
 	return
 }

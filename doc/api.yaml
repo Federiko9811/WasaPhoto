@@ -176,10 +176,6 @@ components:
           example: 1
         owner:
           $ref: "#/components/schemas/Username"
-        img:
-          description: Photo Id
-          type: integer
-          example: 1
         createdAt:
           description: The date of the creation of the photo
           type: string
@@ -235,11 +231,6 @@ components:
     Comment:
       title: Comment
       description: Comment object for the app WASAPhoto
-      example:
-        id: 1
-        owner: Federiko98
-        content: "This is a comment"
-        createdAt: "2021-12-12T12:12:12.000Z"
       type: object
       properties:
         id:
@@ -261,6 +252,10 @@ components:
           minLength: 1
           maxLength: 2048
           format: date-time
+        photo:
+          description: The unique photo identifier
+          type: integer
+          example: 1
     ErrorMessage:
       title: Error
       type: object

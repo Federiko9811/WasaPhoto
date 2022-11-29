@@ -31,6 +31,7 @@ Then you can initialize the AppDatabase and pass it to the api package.
 package database
 
 import (
+	"WasaPhoto/service/structs"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -41,6 +42,7 @@ type AppDatabase interface {
 	GetUserToken(username string) (int64, error)
 	SetUserName(token int64, username string) error
 	CheckToken(token int64) bool
+	GetUserProfile(username string) (structs.UserProfile, error)
 	Ping() error
 }
 

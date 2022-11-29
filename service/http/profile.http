@@ -14,3 +14,8 @@ Authorization: Bearer 1
 {
 	"name": "Federiko9811"
 }
+
+### GetUserProfile
+GET http://localhost:3000/profile-page/Federiko98
+Content-Type: application/json
+Authorization: Bearer 1
