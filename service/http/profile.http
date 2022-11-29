@@ -16,6 +16,6 @@ Authorization: Bearer 1
 }
 
 ### GetUserProfile
-GET http://localhost:3000/profile-page/Federiko98
+GET http://localhost:3000/profile-page/Federiko9811
 Content-Type: application/json
-Authorization: Bearer 1
+Authorization: Bearer 2

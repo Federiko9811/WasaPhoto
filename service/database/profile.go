@@ -81,6 +81,7 @@ func (db *appdbimpl) getNumberOfLikes(photoId int64) (int64, error) {
 
 	return count, nil
 }
+
 func (db *appdbimpl) getNumberOfComments(photoId int64) (int64, error) {
 	var count int64
 
