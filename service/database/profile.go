@@ -94,6 +94,30 @@ func (db *appdbimpl) getNumberOfComments(photoId int64) (int64, error) {
 	return count, nil
 }
 
+func (db *appdbimpl) getNumberFollowers(token int64) (int64, error) {
+	var count int64
+
+	// Get the user token from the database
+	err := db.c.QueryRow("SELECT count(*) FROM follow WHERE followed=?", token).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}
+
+func (db *appdbimpl) getNumberFollowing(token int64) (int64, error) {
+	var count int64
+
+	// Get the user token from the database
+	err := db.c.QueryRow("SELECT count(*) FROM follow WHERE following=?", token).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
+}
+
 func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 	var photos []structs.Photo
 
@@ -102,41 +126,41 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 	if err != nil {
 		return photos, err
 	}
+	if rows != nil {
+		for rows.Next() {
+			var photo structs.Photo
 
-	for rows.Next() {
-		var photo structs.Photo
+			err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
+			if err != nil {
+				return nil, err
+			}
 
-		err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
-		if err != nil {
-			return nil, err
+			// Get the number of likes for the photo
+			photo.NumberOfLikes, err = db.getNumberOfLikes(2)
+			if err != nil {
+				return nil, err
+			}
+
+			// Get the number of comments for the photo
+			photo.NumberOfComments, err = db.getNumberOfComments(photo.Id)
+			if err != nil {
+				return nil, err
+			}
+
+			photos = append(photos, photo)
 		}
-
-		// Get the number of likes for the photo
-		photo.NumberOfLikes, err = db.getNumberOfLikes(photo.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		// Get the number of comments for the photo
-		photo.NumberOfLikes, err = db.getNumberOfComments(photo.Id)
-		if err != nil {
-			return nil, err
-		}
-
-		photos = append(photos, photo)
 	}
 
 	return photos, nil
-
 }
 
-// TODO Fixare la query
 // GetUserProfile returns the user profile for the given user token.
 func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
 	var profile structs.UserProfile
 
 	// Get the user token from the database
-	token, err := db.GetUserToken(us)
+	var token int64
+	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", us).Scan(&token)
 	if err != nil {
 		return profile, err
 	}
@@ -156,6 +180,16 @@ func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
 	}
 
 	profile.NumberOfPhotos = int64(len(profile.Photos))
+
+	profile.NumberOfFollowers, err = db.getNumberFollowers(profile.Token)
+	if err != nil {
+		return profile, err
+	}
+
+	profile.NumberOfFollowing, err = db.getNumberFollowing(profile.Token)
+	if err != nil {
+		return profile, err
+	}
 
 	return profile, nil
 

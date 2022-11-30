@@ -13,11 +13,11 @@ type Message struct {
 }
 
 type Photo struct {
-	Id               int64    `json:"id"`
-	Owner            Username `json:"owner"`
-	CreatedAt        string   `json:"createdAt"`
-	NumberOfLikes    int64    `json:"numberOfLikes"`
-	NumberOfComments int64    `json:"numberOfComments"`
+	Id               int64  `json:"id"`
+	Owner            int64  `json:"owner"`
+	CreatedAt        string `json:"createdAt"`
+	NumberOfLikes    int64  `json:"numberOfLikes"`
+	NumberOfComments int64  `json:"numberOfComments"`
 }
 
 type UserProfile struct {
