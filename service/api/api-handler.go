@@ -12,7 +12,8 @@ func (rt *_router) Handler() http.Handler {
 	//PROFILE
 	rt.router.POST("/session", rt.doLogin)
 	rt.router.PUT("/user/:authenticatedUserId/update-username", rt.authWrapper(rt.setMyUserName))
-	rt.router.GET("/profile-page/:username", rt.getUserProfile)
+	rt.router.GET("/user/:authenticatedUserId/profile-page/:username", rt.authWrapper(rt.getUserProfile))
+	rt.router.GET("/user/:authenticatedUserId/search/:username", rt.authWrapper(rt.searchUser))
 
 	return rt.router
 }

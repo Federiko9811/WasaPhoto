@@ -43,6 +43,7 @@ type AppDatabase interface {
 	SetUserName(token int64, username string) error
 	CheckToken(token int64) bool
 	GetUserProfile(username string) (structs.UserProfile, error)
+	GetUsersList(username string) ([]string, error)
 	Ping() error
 }
 

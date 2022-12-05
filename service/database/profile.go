@@ -6,6 +6,8 @@ import (
 	"errors"
 )
 
+// MAIN FUNCTION
+
 // GetUserToken returns the user token for the given username.
 func (db *appdbimpl) GetUserToken(username string) (int64, error) {
 	var token int64
@@ -24,18 +26,45 @@ func (db *appdbimpl) GetUserToken(username string) (int64, error) {
 	return token, nil
 }
 
-// addUser adds a new user to the database and returns the user token.
-func (db *appdbimpl) addUser(username string) (int64, error) {
+// GetUserProfile returns the user profile for the given user token.
+func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
+	var profile structs.UserProfile
+
+	// Get the user token from the database
 	var token int64
-
-	row, err := db.c.Exec("INSERT INTO user (username) VALUES (?) RETURNING token", username)
-
+	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", us).Scan(&token)
 	if err != nil {
-		return 0, err
+		return profile, err
 	}
 
-	token, err = row.LastInsertId()
-	return token, err
+	// Get the user profile from the database
+	actualToken, username, err := db.getUserData(token)
+	if err != nil {
+		return profile, err
+	}
+
+	profile.Token = actualToken
+	profile.Username = username
+
+	profile.Photos, err = db.getListOfPhotos(profile.Token)
+	if err != nil {
+		return profile, err
+	}
+
+	profile.NumberOfPhotos = int64(len(profile.Photos))
+
+	profile.NumberOfFollowers, err = db.getNumberFollowers(profile.Token)
+	if err != nil {
+		return profile, err
+	}
+
+	profile.NumberOfFollowing, err = db.getNumberFollowing(profile.Token)
+	if err != nil {
+		return profile, err
+	}
+
+	return profile, nil
+
 }
 
 // SetUserName sets the username for the given user token.
@@ -47,6 +76,26 @@ func (db *appdbimpl) SetUserName(token int64, username string) error {
 	return nil
 }
 
+func (db *appdbimpl) GetUsersList(str string) ([]string, error) {
+	var users []string
+	// Get all the photos of the user
+	rows, err := db.c.Query("SELECT username FROM user WHERE username LIKE ?", "%"+str+"%")
+	if err != nil {
+		return users, err
+	}
+	if rows != nil {
+		for rows.Next() {
+			var username string
+			err = rows.Scan(&username)
+			if err != nil {
+				return nil, err
+			}
+			users = append(users, username)
+		}
+	}
+	return users, nil
+}
+
 // CheckToken checks if the token exist.
 func (db *appdbimpl) CheckToken(token int64) bool {
 	var count int64
@@ -56,6 +105,8 @@ func (db *appdbimpl) CheckToken(token int64) bool {
 	}
 	return count == 1
 }
+
+// HELPER FUNCTIONS
 
 func (db *appdbimpl) getUserData(id int64) (int64, string, error) {
 	var username string
@@ -154,43 +205,16 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 	return photos, nil
 }
 
-// GetUserProfile returns the user profile for the given user token.
-func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
-	var profile structs.UserProfile
-
-	// Get the user token from the database
+// addUser adds a new user to the database and returns the user token.
+func (db *appdbimpl) addUser(username string) (int64, error) {
 	var token int64
-	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", us).Scan(&token)
+
+	row, err := db.c.Exec("INSERT INTO user (username) VALUES (?) RETURNING token", username)
+
 	if err != nil {
-		return profile, err
+		return 0, err
 	}
 
-	// Get the user profile from the database
-	actualToken, username, err := db.getUserData(token)
-	if err != nil {
-		return profile, err
-	}
-
-	profile.Token = actualToken
-	profile.Username = username
-
-	profile.Photos, err = db.getListOfPhotos(profile.Token)
-	if err != nil {
-		return profile, err
-	}
-
-	profile.NumberOfPhotos = int64(len(profile.Photos))
-
-	profile.NumberOfFollowers, err = db.getNumberFollowers(profile.Token)
-	if err != nil {
-		return profile, err
-	}
-
-	profile.NumberOfFollowing, err = db.getNumberFollowing(profile.Token)
-	if err != nil {
-		return profile, err
-	}
-
-	return profile, nil
-
+	token, err = row.LastInsertId()
+	return token, err
 }
