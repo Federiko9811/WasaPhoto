@@ -1,0 +1,19 @@
+### Add Follow (Funzionante)
+PUT http://localhost:3000/user/1/follow/Federiko9811
+Content-Type: application/json
+Authorization: Bearer 1
+
+### Remove Follow (Funzionante)
+DELETE http://localhost:3000/user/1/follow/Federiko9811
+Content-Type: application/json
+Authorization: Bearer 1
+
+### Add Ban (Funzionante)
+PUT http://localhost:3000/user/1/ban/Test
+Content-Type: application/json
+Authorization: Bearer 1
+
+### Remove Ban
+DELETE http://localhost:3000/user/1/ban/Test
+Content-Type: application/json
+Authorization: Bearer 1

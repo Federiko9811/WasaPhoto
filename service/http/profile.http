@@ -25,3 +25,4 @@ Authorization: Bearer 1
 GET http://localhost:3000/user/1/search/Fede
 Content-Type: application/json
 Authorization: Bearer 1
+

@@ -39,12 +39,18 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
+	Ping() error
+
 	GetUserToken(username string) (int64, error)
 	SetUserName(token int64, username string) error
 	CheckToken(token int64) bool
 	GetUserProfile(username string) (structs.UserProfile, error)
 	GetUsersList(username string) ([]string, error)
-	Ping() error
+
+	AddFollow(following int64, follow string) error
+	RemoveFollow(following int64, follow string) error
+	AddBan(banning int64, ban string) error
+	RemoveBan(banning int64, ban string) error
 }
 
 type appdbimpl struct {

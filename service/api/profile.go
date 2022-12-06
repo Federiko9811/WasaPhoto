@@ -14,21 +14,30 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 	// Decode request body
 	var username structs.Username
 	err := json.NewDecoder(r.Body).Decode(&username)
-
 	if err != nil {
-		rt.baseLogger.Errorf("Decoding Error: %v", err)
+		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
+
+	// check if the username respect a regex
+	match := utils.CheckUsernameRegex(w, username.Username)
+	if !match {
+		return
+	}
+
+	// Get user token from database
 	var identifier structs.Token
 	identifier.Identifier, err = rt.db.GetUserToken(username.Username)
 	if err != nil {
-		rt.baseLogger.Errorf("Error getting identifier: %v", err)
+		utils.ReturnInternalServerError(w, err)
 		return
 	}
+
+	// Encode response body with the token
 	w.WriteHeader(http.StatusCreated)
 	err = json.NewEncoder(w).Encode(identifier)
 	if err != nil {
-		rt.baseLogger.Errorf("Encoding Error: %v", err)
+		utils.ReturnInternalServerError(w, err)
 		return
 	}
 }
@@ -41,11 +50,11 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	var username structs.Username
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
-		rt.baseLogger.Errorf("Decoding Error: %v", err)
+		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
 
-	// check id username respect a regex
+	// check if the username respect a regex
 	match := utils.CheckUsernameRegex(w, username.Username)
 	if !match {
 		return
@@ -54,8 +63,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	//Update username in database for the user with the given token
 	err = rt.db.SetUserName(pathToken, username.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		rt.baseLogger.Errorf("Error setting username: %v", err)
+		utils.ReturnInternalServerError(w, err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -79,8 +87,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 	// Get user profile from database
 	profile, err := rt.db.GetUserProfile(username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		rt.baseLogger.Errorf("Error setting username: %v", err)
+		utils.ReturnInternalServerError(w, err)
 		return
 	}
 
@@ -102,7 +109,7 @@ func (rt *_router) searchUser(w http.ResponseWriter, _ *http.Request, p httprout
 	// Get user profile from database
 	users, err := rt.db.GetUsersList(username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		utils.ReturnInternalServerError(w, err)
 		return
 	}
 
