@@ -364,8 +364,9 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /profile-page/{username}:
+  /user/{authenticatedUserId}/profile-page/{username}:
     parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/Username" }
     get:
       tags: [ "profile" ]
@@ -385,8 +386,9 @@ paths:
       security:
         - bearerAuth: [ ]
 
-  /search/{username}:
+  /user/{authenticatedUserId}/search/{username}:
     parameters:
+      - { $ref: "#/components/parameters/AuthenticatedUserId" }
       - { $ref: "#/components/parameters/Username" }
     get:
       tags: [ "profile" ]
