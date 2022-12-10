@@ -15,10 +15,25 @@ func (rt *_router) followUser(w http.ResponseWriter, _ *http.Request, p httprout
 		return
 	}
 
-	//TODO Capire se bisogna controllare anche qui se i due utenti sono già amici o
-	// o se l'utente sta cercando di seguire se stesso
+	token2, err := rt.db.GetUserTokenOnly(username)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
 
-	err := rt.db.AddFollow(token, username)
+	if token == token2 {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var check bool
+	check, err = rt.db.CheckFollow(token, token2)
+	if err != nil || check {
+		utils.ReturnConfilictMessage(w)
+		return
+	}
+
+	err = rt.db.AddFollow(token, username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
@@ -37,7 +52,25 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, _ *http.Request, p httpro
 		return
 	}
 
-	err := rt.db.RemoveFollow(token, username)
+	token2, err := rt.db.GetUserTokenOnly(username)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if token == token2 {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var check bool
+	check, err = rt.db.CheckFollow(token, token2)
+	if err != nil || !check {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	err = rt.db.RemoveFollow(token, username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
@@ -56,7 +89,25 @@ func (rt *_router) banUser(w http.ResponseWriter, _ *http.Request, p httprouter.
 		return
 	}
 
-	err := rt.db.AddBan(token, username)
+	token2, err := rt.db.GetUserTokenOnly(username)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if token == token2 {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var check bool
+	check, err = rt.db.CheckBan(token, token2)
+	if err != nil || check {
+		utils.ReturnConfilictMessage(w)
+		return
+	}
+
+	err = rt.db.AddBan(token, username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
@@ -75,7 +126,25 @@ func (rt *_router) unbanUser(w http.ResponseWriter, _ *http.Request, p httproute
 		return
 	}
 
-	err := rt.db.RemoveBan(token, username)
+	token2, err := rt.db.GetUserTokenOnly(username)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if token == token2 {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var check bool
+	check, err = rt.db.CheckBan(token, token2)
+	if err != nil || check {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	err = rt.db.RemoveBan(token, username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return

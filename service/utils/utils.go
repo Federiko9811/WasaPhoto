@@ -50,6 +50,25 @@ func ReturnBadRequestMessage(w http.ResponseWriter, err error) {
 	}
 }
 
+func ReturnForbiddenMessage(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusForbidden)
+	res := structs.Message{
+		Message: "Forbidden Action",
+	}
+	err := json.NewEncoder(w).Encode(res)
+	ReturnInternalServerError(w, err)
+	return
+}
+func ReturnConfilictMessage(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusConflict)
+	res := structs.Message{
+		Message: "This resource is already in the db",
+	}
+	err := json.NewEncoder(w).Encode(res)
+	ReturnInternalServerError(w, err)
+	return
+}
+
 // FUNCTIONS
 
 func ExtractToken(r *http.Request) (int64, error) {

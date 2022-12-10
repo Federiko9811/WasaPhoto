@@ -82,3 +82,25 @@ func (db *appdbimpl) RemoveBan(banning int64, ban string) error {
 
 	return nil
 }
+
+func (db *appdbimpl) CheckFollow(u1 int64, u2 int64) (bool, error) {
+
+	count := 0
+
+	err := db.c.QueryRow("SELECT count(*) FROM follow WHERE following=? AND followed=?", u1, u2).Scan(&count)
+	if err != nil || count == 0 {
+		return false, err
+	}
+	return true, nil
+}
+
+func (db *appdbimpl) CheckBan(u1 int64, u2 int64) (bool, error) {
+
+	count := 0
+
+	err := db.c.QueryRow("SELECT count(*) FROM ban WHERE banning=? AND banned=?", u1, u2).Scan(&count)
+	if err != nil || count == 0 {
+		return false, err
+	}
+	return true, nil
+}

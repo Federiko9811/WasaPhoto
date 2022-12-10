@@ -10,11 +10,8 @@ import (
 
 // GetUserToken returns the user token for the given username.
 func (db *appdbimpl) GetUserToken(username string) (int64, error) {
-	var token int64
 
-	//TODO USA la query in global
-	// Get the user token from the database
-	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", username).Scan(&token)
+	token, err := db.GetUserTokenOnly(username)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// If no user has been found, create a new one
@@ -218,4 +215,13 @@ func (db *appdbimpl) addUser(username string) (int64, error) {
 
 	token, err = row.LastInsertId()
 	return token, err
+}
+
+func (db *appdbimpl) GetUserTokenOnly(username string) (int64, error) {
+	var token int64
+	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", username).Scan(&token)
+	if err != nil {
+		return -1, err
+	}
+	return token, nil
 }
