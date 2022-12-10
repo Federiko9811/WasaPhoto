@@ -11,6 +11,8 @@ import (
 type AppDatabase interface {
 	Ping() error
 	GetUserTokenOnly(username string) (int64, error)
+	CheckPhotoOwner(token int64, photoId int64) (bool, error)
+	GetPhotoOwner(photoId int64) (int64, error)
 
 	GetUserToken(username string) (int64, error)
 	SetUserName(token int64, username string) error
@@ -24,6 +26,10 @@ type AppDatabase interface {
 	RemoveBan(banning int64, ban string) error
 	CheckFollow(u1 int64, u2 int64) (bool, error)
 	CheckBan(u1 int64, u2 int64) (bool, error)
+
+	PostPhoto(image []byte, token int64) error
+	DeletePhoto(token int64, photoId int64) error
+	GetImage(photoId int64) ([]byte, error)
 }
 
 type appdbimpl struct {

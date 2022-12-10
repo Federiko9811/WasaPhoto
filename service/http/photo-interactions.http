@@ -1,0 +1,4 @@
+### Delete Photo
+DELETE  http://localhost:3000/user/2/photos/4/
+Content-Type: application/json
+Authorization: Bearer 2

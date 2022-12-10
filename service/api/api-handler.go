@@ -38,26 +38,28 @@ func (rt *_router) Handler() http.Handler {
 	//return the photos of the followed users
 	rt.router.GET("/user/:authenticatedUserId/photos/", rt.authWrapper(nil))
 	//post a new photo
-	rt.router.POST("/user/:authenticatedUserId/photos/", rt.authWrapper(nil))
+	rt.router.POST("/user/:authenticatedUserId/photos/", rt.authWrapper(rt.uploadPhoto))
 	//get a photo
-	rt.router.GET("/user/:authenticatedUserId/photos/:photoIds/", rt.authWrapper(nil))
+	rt.router.GET("/user/:authenticatedUserId/photos/:photoId/", rt.authWrapper(rt.getPhoto))
 	//delete a photo
-	rt.router.DELETE("/user/:authenticatedUserId/photos/:photoIds/", rt.authWrapper(nil))
-	//like a photo
-	rt.router.PUT("/user/:username/photos/:photoIds/likes/:authenticatedUserId", rt.authWrapper(nil))
-	//unlike a photo
-	rt.router.DELETE("/user/:username/photos/:photoIds/likes/:authenticatedUserId", rt.authWrapper(nil))
-	//get the comments of a photo
-	rt.router.GET("/user/:username/photos/:photoIds/comments/owner/:authenticatedUserId", rt.authWrapper(nil))
-	//add a comment to a photo
-	rt.router.POST("/user/:username/photos/:photoIds/comments/owner/:authenticatedUserId", rt.authWrapper(nil))
+	rt.router.DELETE("/user/:authenticatedUserId/photos/:photoId/", rt.authWrapper(rt.deletePhoto))
 
-	//COMMENTS
-
-	//get the comment of a photo
-	rt.router.GET("/user/:username/photos/:photoIds/comments/:commentId", rt.authWrapper(nil))
-	//delete a comment
-	rt.router.DELETE("/user/:username/photos/:photoIds/comments/:commentId", rt.authWrapper(nil))
+	// TODO CAPIRE COME AGGIUSTARE IL PATH
+	////like a photo
+	//rt.router.PUT("/user/:username/photos/:photoIds/likes/:authenticatedUserId", rt.authWrapper(nil))
+	////unlike a photo
+	//rt.router.DELETE("/user/:username/photos/:photoIds/likes/:authenticatedUserId", rt.authWrapper(nil))
+	////get the comments of a photo
+	//rt.router.GET("/user/:username/photos/:photoIds/comments/owner/:authenticatedUserId", rt.authWrapper(nil))
+	////add a comment to a photo
+	//rt.router.POST("/user/:username/photos/:photoIds/comments/owner/:authenticatedUserId", rt.authWrapper(nil))
+	//
+	////COMMENTS
+	//
+	////get the comment of a photo
+	//rt.router.GET("/user/:username/photos/:photoIds/comments/:commentId", rt.authWrapper(nil))
+	////delete a comment
+	//rt.router.DELETE("/user/:username/photos/:photoIds/comments/:commentId", rt.authWrapper(nil))
 
 	return rt.router
 }

@@ -9,9 +9,9 @@ Content-Type: application/json
 Authorization: Bearer 1
 
 ### Add Ban (Funzionante)
-PUT http://localhost:3000/user/1/ban/Test
+PUT http://localhost:3000/user/2/ban/Federiko9811
 Content-Type: application/json
-Authorization: Bearer 1
+Authorization: Bearer 2
 
 ### Remove Ban
 DELETE http://localhost:3000/user/1/ban/Test
