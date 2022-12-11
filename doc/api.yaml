@@ -65,6 +65,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateMessage'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
     UserProfilePage:
       description: User profile page
       content:
@@ -339,6 +345,7 @@ paths:
         required: true
       responses:
         201: { $ref: "#/components/responses/LoginMessage" }
+        500: { $ref: "#/components/responses/InternalServerError" }
 
   /user/{authenticatedUserId}/update-username:
     parameters:
@@ -361,6 +368,7 @@ paths:
         200: { $ref: "#/components/responses/UpdateUsername" }
         400: { $ref: '#/components/responses/BadRequestError' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -383,6 +391,7 @@ paths:
         401: { $ref: '#/components/responses/UnauthorizedError' }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -402,6 +411,7 @@ paths:
         200: { $ref: "#/components/responses/UsersList" }
         401: { $ref: '#/components/responses/UnauthorizedError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -420,6 +430,7 @@ paths:
       responses:
         200: { $ref: "#/components/responses/Photos" }
         401: { $ref: "#/components/responses/UnauthorizedError" }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     post:
@@ -442,6 +453,7 @@ paths:
         201: { $ref: '#/components/responses/CreatedMessage' }
         400: { $ref: '#/components/responses/BadRequestError' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -453,16 +465,17 @@ paths:
       tags: [ "photos interactions" ]
       summary: Get the photo
       description: |-
-          Get the photo with the id specified in the path.
-          If the token in the header is not valid, the response is 401 Unauthorized.
-          If the photo does not exist, the response is 404 Not Found.
+        Get the photo with the id specified in the path.
+        If the token in the header is not valid, the response is 401 Unauthorized.
+        If the photo does not exist, the response is 404 Not Found.
       operationId: getPhoto
       responses:
-          200: { $ref: "#/components/responses/Photo" }
-          401: { $ref: "#/components/responses/UnauthorizedError" }
-          404: { $ref: '#/components/responses/NotFoundError' }
+        200: { $ref: "#/components/responses/Photo" }
+        401: { $ref: "#/components/responses/UnauthorizedError" }
+        404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
-          - bearerAuth: [ ]
+        - bearerAuth: [ ]
     delete:
       tags: [ "photos interactions" ]
       summary: Delete the photo
@@ -476,6 +489,7 @@ paths:
         204: { $ref: '#/components/responses/NoContentMessage' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -500,6 +514,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     delete:
@@ -519,6 +534,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -544,6 +560,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     delete:
@@ -563,6 +580,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -585,6 +603,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         404: { $ref: '#/components/responses/NotFoundError' }
         400: { $ref: '#/components/responses/BadRequestError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     delete:
@@ -601,10 +620,11 @@ paths:
         400: { $ref: '#/components/responses/BadRequestError' }
         401: { $ref: "#/components/responses/UnauthorizedError" }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
-  /user/{username}/photos/{photoId}/comments/owner/{authenticatedUserId}:
+  /user/{username}/photos/{photoId}/comments/:
     parameters:
       - { $ref: "#/components/parameters/Username" }
       - { $ref: "#/components/parameters/PhotoId" }
@@ -623,6 +643,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     post:
@@ -648,6 +669,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
 
@@ -671,6 +693,7 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
     delete:
@@ -689,5 +712,6 @@ paths:
         401: { $ref: "#/components/responses/UnauthorizedError" }
         403: { $ref: '#/components/responses/ForbiddenError' }
         404: { $ref: '#/components/responses/NotFoundError' }
+        500: { $ref: "#/components/responses/InternalServerError" }
       security:
         - bearerAuth: [ ]
