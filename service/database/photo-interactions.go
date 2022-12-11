@@ -30,3 +30,22 @@ func (db *appdbimpl) CheckPhotoOwner(token int64, photoId int64) (bool, error) {
 	}
 	return owner == token, nil
 }
+
+func (db *appdbimpl) LikePhoto(token int64, photoId int64) error {
+	_, err := db.c.Exec("INSERT INTO like (owner, photo) VALUES (?, ?)", token, photoId)
+	return err
+}
+
+func (db *appdbimpl) UnlikePhoto(token int64, photoId int64) error {
+	_, err := db.c.Exec("DELETE FROM like WHERE owner=? AND photo=?", token, photoId)
+	return err
+}
+
+func (db *appdbimpl) CheckLike(token int64, photoId int64) (bool, error) {
+	var count int64
+	err := db.c.QueryRow("SELECT count(*) FROM like WHERE owner=? AND photo=?", token, photoId).Scan(&count)
+	if err != nil || count == 0 {
+		return false, err
+	}
+	return count == 1, nil
+}

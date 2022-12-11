@@ -87,3 +87,43 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 	_, _ = w.Write(photo)
 	return
 }
+
+func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	photoId, err := strconv.ParseInt(p.ByName("photoId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var owner int64
+	owner, err = rt.db.GetPhotoOwner(photoId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	var ban bool
+	ban, err = rt.db.CheckBan(owner, token)
+	if err != nil || ban {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var like bool
+	like, err = rt.db.CheckLike(token, photoId)
+	if err != nil || like {
+		utils.ReturnConfilictMessage(w)
+		return
+	}
+
+	err = rt.db.LikePhoto(token, photoId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	utils.ReturnCreatedMessage(w)
+	return
+}
