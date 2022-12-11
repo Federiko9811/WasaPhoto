@@ -248,3 +248,73 @@ func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p ht
 
 	return
 }
+
+func (rt *_router) getComment(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	commentId, err := strconv.ParseInt(p.ByName("commentId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var owner int64
+	owner, err = rt.db.GetCommentOwner(commentId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	var ban bool
+	ban, err = rt.db.CheckBan(owner, token)
+	if err != nil || ban {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var comment structs.FullDataComment
+	comment, err = rt.db.GetComment(commentId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(comment)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	return
+}
+
+func (rt *_router) deleteComment(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	commentId, err := strconv.ParseInt(p.ByName("commentId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var owner int64
+	owner, err = rt.db.GetCommentOwner(commentId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if owner != token {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	err = rt.db.DeleteComment(commentId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+	return
+}

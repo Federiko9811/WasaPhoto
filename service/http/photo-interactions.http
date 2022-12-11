@@ -28,3 +28,15 @@ Authorization: Bearer 2
 GET http://localhost:3000/user/1/photos/8/comments/
 Content-Type: application/json
 Authorization: Bearer 2
+
+
+### Get single comment (Funzionate)
+GET http://localhost:3000/user/1/photos/8/comments/5
+Content-Type: application/json
+Authorization: Bearer 2
+
+
+### Delete single comment
+DELETE http://localhost:3000/user/1/photos/8/comments/5
+Content-Type: application/json
+Authorization: Bearer 2

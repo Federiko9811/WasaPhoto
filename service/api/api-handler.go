@@ -31,8 +31,6 @@ func (rt *_router) Handler() http.Handler {
 	//unban user
 	rt.router.DELETE("/user/:userId/ban/:username", rt.authWrapper(rt.unbanUser))
 
-	//TODO DA FARE
-
 	// PHOTO INERACTION
 
 	//return the photos of the followed users
@@ -56,9 +54,9 @@ func (rt *_router) Handler() http.Handler {
 	//COMMENTS
 
 	//get the comment of a photo
-	rt.router.GET("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(nil))
+	rt.router.GET("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.getComment))
 	//delete a comment
-	rt.router.DELETE("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(nil))
+	rt.router.DELETE("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.deleteComment))
 
 	return rt.router
 }

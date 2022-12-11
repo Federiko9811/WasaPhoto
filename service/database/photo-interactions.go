@@ -84,3 +84,20 @@ func (db *appdbimpl) GetPhotoComments(photoId int64) ([]structs.FullDataComment,
 	}
 	return comments, nil
 }
+
+func (db *appdbimpl) GetCommentOwner(commentId int64) (int64, error) {
+	var owner int64
+	err := db.c.QueryRow("SELECT owner FROM comment WHERE id=?", commentId).Scan(&owner)
+	return owner, err
+}
+
+func (db *appdbimpl) GetComment(commentId int64) (structs.FullDataComment, error) {
+	var comment structs.FullDataComment
+	err := db.c.QueryRow("SELECT * FROM comment WHERE id=?", commentId).Scan(&comment.Id, &comment.Content, &comment.CreatedAt, &comment.Owner, &comment.Photo)
+	return comment, err
+}
+
+func (db *appdbimpl) DeleteComment(commentId int64) error {
+	_, err := db.c.Exec("DELETE FROM comment WHERE id=?", commentId)
+	return err
+}
