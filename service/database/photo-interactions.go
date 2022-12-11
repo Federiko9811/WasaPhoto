@@ -49,3 +49,8 @@ func (db *appdbimpl) CheckLike(token int64, photoId int64) (bool, error) {
 	}
 	return count == 1, nil
 }
+
+func (db *appdbimpl) CommentPhoto(token int64, photoId int64, content string) error {
+	_, err := db.c.Exec("INSERT INTO comment (owner, content, photo) VALUES (?, ?, ?)", token, content, photoId)
+	return err
+}

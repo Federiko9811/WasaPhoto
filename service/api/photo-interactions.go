@@ -1,7 +1,9 @@
 package api
 
 import (
+	"WasaPhoto/service/structs"
 	"WasaPhoto/service/utils"
+	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"io"
 	"net/http"
@@ -165,5 +167,45 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+	return
+}
+
+func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	photoId, err := strconv.ParseInt(p.ByName("photoId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var owner int64
+	owner, err = rt.db.GetPhotoOwner(photoId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	var ban bool
+	ban, err = rt.db.CheckBan(owner, token)
+	if err != nil || ban {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var comment structs.Comment
+	err = json.NewDecoder(r.Body).Decode(&comment)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	err = rt.db.CommentPhoto(token, photoId, comment.Comment)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	utils.ReturnCreatedMessage(w)
 	return
 }

@@ -12,6 +12,10 @@ type Message struct {
 	Message string `json:"message"`
 }
 
+type Comment struct {
+	Comment string `json:"comment"`
+}
+
 type Photo struct {
 	Id               int64  `json:"id"`
 	Owner            int64  `json:"owner"`

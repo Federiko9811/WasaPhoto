@@ -33,6 +33,7 @@ type AppDatabase interface {
 	GetImage(photoId int64) ([]byte, error)
 	LikePhoto(token int64, photoId int64) error
 	UnlikePhoto(token int64, photoId int64) error
+	CommentPhoto(token int64, photoId int64, content string) error
 }
 
 type appdbimpl struct {
