@@ -15,7 +15,7 @@ Content-Type: application/json
 Authorization: Bearer 2
 
 
-### Post Comment
+### Post Comment (Funzionate)
 POST http://localhost:3000/user/1/photos/8/comments/
 Content-Type: application/json
 Authorization: Bearer 2
@@ -23,3 +23,8 @@ Authorization: Bearer 2
 {
 	"comment": "Prova Commento da path 2"
 }
+
+### GET Comments of a photo (Funzionate)
+GET http://localhost:3000/user/1/photos/8/comments/
+Content-Type: application/json
+Authorization: Bearer 2

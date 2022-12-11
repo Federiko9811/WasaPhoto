@@ -1,5 +1,10 @@
 package database
 
+import (
+	"WasaPhoto/service/structs"
+	"database/sql"
+)
+
 func (db *appdbimpl) PostPhoto(image []byte, token int64) error {
 	_, err := db.c.Exec("INSERT INTO photo (owner, img) VALUES (?, ?)", token, image)
 	return err
@@ -53,4 +58,29 @@ func (db *appdbimpl) CheckLike(token int64, photoId int64) (bool, error) {
 func (db *appdbimpl) CommentPhoto(token int64, photoId int64, content string) error {
 	_, err := db.c.Exec("INSERT INTO comment (owner, content, photo) VALUES (?, ?, ?)", token, content, photoId)
 	return err
+}
+
+func (db *appdbimpl) GetPhotoComments(photoId int64) ([]structs.FullDataComment, error) {
+	rows, err := db.c.Query("SELECT * FROM comment WHERE photo=?", photoId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(rows *sql.Rows) {
+		err = rows.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(rows)
+
+	var comments []structs.FullDataComment
+	for rows.Next() {
+		var comment structs.FullDataComment
+		err = rows.Scan(&comment.Id, &comment.Content, &comment.CreatedAt, &comment.Owner, &comment.Photo)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+	return comments, nil
 }

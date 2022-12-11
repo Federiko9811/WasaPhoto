@@ -16,6 +16,14 @@ type Comment struct {
 	Comment string `json:"comment"`
 }
 
+type FullDataComment struct {
+	Id        int64  `json:"id"`
+	Content   string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	Owner     int64  `json:"owner"`
+	Photo     int64  `json:"photo"`
+}
+
 type Photo struct {
 	Id               int64  `json:"id"`
 	Owner            int64  `json:"owner"`

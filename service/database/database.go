@@ -34,6 +34,7 @@ type AppDatabase interface {
 	LikePhoto(token int64, photoId int64) error
 	UnlikePhoto(token int64, photoId int64) error
 	CommentPhoto(token int64, photoId int64, content string) error
+	GetPhotoComments(photoId int64) ([]structs.FullDataComment, error)
 }
 
 type appdbimpl struct {

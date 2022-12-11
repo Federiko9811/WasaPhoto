@@ -209,3 +209,42 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httpro
 	utils.ReturnCreatedMessage(w)
 	return
 }
+
+func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	photoId, err := strconv.ParseInt(p.ByName("photoId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var owner int64
+	owner, err = rt.db.GetPhotoOwner(photoId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	var ban bool
+	ban, err = rt.db.CheckBan(owner, token)
+	if err != nil || ban {
+		utils.ReturnForbiddenMessage(w)
+		return
+	}
+
+	var comments []structs.FullDataComment
+	comments, err = rt.db.GetPhotoComments(photoId)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(comments)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	return
+}
