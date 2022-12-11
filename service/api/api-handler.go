@@ -45,9 +45,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/user/:userId/photos/:photoId/", rt.authWrapper(rt.deletePhoto))
 
 	//like a photo
-	rt.router.PUT("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authWrapper(nil))
+	rt.router.PUT("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authLikeWrapper(rt.likePhoto))
 	//unlike a photo
-	rt.router.DELETE("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authWrapper(nil))
+	rt.router.DELETE("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authLikeWrapper(rt.unlikePhoto))
 	//get the comments of a photo
 	rt.router.GET("/user/:userId/photos/:photoId/comments/", rt.authWrapper(nil))
 	//add a comment to a photo

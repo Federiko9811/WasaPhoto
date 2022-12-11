@@ -8,9 +8,7 @@ import (
 	"net/http"
 )
 
-type httpRouterHandler func(http.ResponseWriter, *http.Request, httprouter.Params, int64)
-
-func (rt *_router) authWrapper(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func (rt *_router) authLikeWrapper(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		w.Header().Set("content-type", "application/json")
 		// Take the content of the Authorization header
@@ -29,7 +27,7 @@ func (rt *_router) authWrapper(fn httpRouterHandler) func(http.ResponseWriter, *
 		}
 
 		// Get the user id from the token
-		pathToken := utils.ExtractTokenFromPath(w, err, ps, "userId")
+		pathToken := utils.ExtractTokenFromPath(w, err, ps, "authenticatedUserId")
 
 		if pathToken != token {
 			w.WriteHeader(http.StatusForbidden)

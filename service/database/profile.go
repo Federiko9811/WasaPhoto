@@ -185,7 +185,7 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 			}
 
 			// Get the number of likes for the photo
-			photo.NumberOfLikes, err = db.getNumberOfLikes(2)
+			photo.NumberOfLikes, err = db.getNumberOfLikes(photo.Id)
 			if err != nil {
 				return nil, err
 			}

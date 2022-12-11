@@ -92,8 +92,8 @@ func ExtractToken(r *http.Request) (int64, error) {
 
 }
 
-func ExtractTokenFromPath(w http.ResponseWriter, err error, ps httprouter.Params) int64 {
-	pathToken, err := strconv.ParseInt(ps.ByName("userId"), 10, 64)
+func ExtractTokenFromPath(w http.ResponseWriter, err error, ps httprouter.Params, paramsName string) int64 {
+	pathToken, err := strconv.ParseInt(ps.ByName(paramsName), 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		res := structs.Message{

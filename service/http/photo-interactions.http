@@ -1,4 +1,15 @@
-### Delete Photo
+### Delete Photo (Funzionate)
 DELETE  http://localhost:3000/user/2/photos/4/
+Content-Type: application/json
+Authorization: Bearer 2
+
+### Like Photo (Funzionate)
+PUT http://localhost:3000/user/1/photos/8/likes/3
+Content-Type: application/json
+Authorization: Bearer 3
+
+
+### Unlike Photo (Funzionate)
+DELETE http://localhost:3000/user/1/photos/8/likes/2
 Content-Type: application/json
 Authorization: Bearer 2
