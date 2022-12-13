@@ -35,7 +35,6 @@ func ReturnCreatedMessage(w http.ResponseWriter) {
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
-	return
 }
 
 func ReturnBadRequestMessage(w http.ResponseWriter, err error) {
@@ -57,7 +56,6 @@ func ReturnForbiddenMessage(w http.ResponseWriter) {
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
-	return
 }
 func ReturnConfilictMessage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusConflict)
@@ -66,7 +64,6 @@ func ReturnConfilictMessage(w http.ResponseWriter) {
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
-	return
 }
 
 // FUNCTIONS

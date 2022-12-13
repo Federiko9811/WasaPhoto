@@ -25,7 +25,6 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, _ httprou
 	}
 
 	utils.ReturnCreatedMessage(w)
-	return
 }
 
 func (rt *_router) deletePhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -53,7 +52,6 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	return
 }
 
 func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -87,7 +85,6 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 
 	w.Header().Set("Content-Type", "image/png")
 	_, _ = w.Write(photo)
-	return
 }
 
 func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -127,7 +124,6 @@ func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httproute
 	}
 
 	utils.ReturnCreatedMessage(w)
-	return
 }
 
 func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -167,7 +163,6 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	return
 }
 
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httprouter.Params, token int64) {
@@ -207,7 +202,6 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httpro
 	}
 
 	utils.ReturnCreatedMessage(w)
-	return
 }
 
 func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -245,8 +239,6 @@ func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p ht
 		utils.ReturnInternalServerError(w, err)
 		return
 	}
-
-	return
 }
 
 func (rt *_router) getComment(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -284,8 +276,6 @@ func (rt *_router) getComment(w http.ResponseWriter, _ *http.Request, p httprout
 		utils.ReturnInternalServerError(w, err)
 		return
 	}
-
-	return
 }
 
 func (rt *_router) deleteComment(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -316,5 +306,4 @@ func (rt *_router) deleteComment(w http.ResponseWriter, _ *http.Request, p httpr
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	return
 }

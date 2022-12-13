@@ -40,7 +40,6 @@ func (rt *_router) followUser(w http.ResponseWriter, _ *http.Request, p httprout
 	}
 
 	utils.ReturnCreatedMessage(w)
-	return
 }
 
 func (rt *_router) unfollowUser(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -77,7 +76,6 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, _ *http.Request, p httpro
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	return
 }
 
 func (rt *_router) banUser(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -114,7 +112,6 @@ func (rt *_router) banUser(w http.ResponseWriter, _ *http.Request, p httprouter.
 	}
 
 	utils.ReturnCreatedMessage(w)
-	return
 }
 
 func (rt *_router) unbanUser(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
@@ -151,5 +148,4 @@ func (rt *_router) unbanUser(w http.ResponseWriter, _ *http.Request, p httproute
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-	return
 }

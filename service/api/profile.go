@@ -72,7 +72,6 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	}
 	err = json.NewEncoder(w).Encode(res)
 	utils.ReturnInternalServerError(w, err)
-	return
 }
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p httprouter.Params, _ int64) {
@@ -94,7 +93,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(profile)
 	utils.ReturnInternalServerError(w, err)
-	return
 }
 
 func (rt *_router) searchUser(w http.ResponseWriter, _ *http.Request, p httprouter.Params, _ int64) {
@@ -116,5 +114,4 @@ func (rt *_router) searchUser(w http.ResponseWriter, _ *http.Request, p httprout
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(users)
 	utils.ReturnInternalServerError(w, err)
-	return
 }
