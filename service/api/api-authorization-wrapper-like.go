@@ -27,7 +27,7 @@ func (rt *_router) authLikeWrapper(fn httpRouterHandler) func(http.ResponseWrite
 		}
 
 		// Get the user id from the token
-		pathToken := utils.ExtractTokenFromPath(w, err, ps, "authenticatedUserId")
+		pathToken := utils.ExtractTokenFromPath(w, ps, "authenticatedUserId")
 
 		if pathToken != token {
 			w.WriteHeader(http.StatusForbidden)

@@ -29,7 +29,7 @@ func (rt *_router) authWrapper(fn httpRouterHandler) func(http.ResponseWriter, *
 		}
 
 		// Get the user id from the token
-		pathToken := utils.ExtractTokenFromPath(w, err, ps, "userId")
+		pathToken := utils.ExtractTokenFromPath(w, ps, "userId")
 
 		if pathToken != token {
 			w.WriteHeader(http.StatusForbidden)
