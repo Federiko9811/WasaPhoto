@@ -2,7 +2,6 @@ package database
 
 import (
 	"WasaPhoto/service/structs"
-	"database/sql"
 )
 
 func (db *appdbimpl) PostPhoto(image []byte, token int64) error {
@@ -66,13 +65,6 @@ func (db *appdbimpl) GetPhotoComments(photoId int64) ([]structs.FullDataComment,
 		return nil, err
 	}
 
-	defer func(rows *sql.Rows) {
-		err = rows.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(rows)
-
 	var comments []structs.FullDataComment
 	for rows.Next() {
 		var comment structs.FullDataComment
@@ -82,6 +74,13 @@ func (db *appdbimpl) GetPhotoComments(photoId int64) ([]structs.FullDataComment,
 		}
 		comments = append(comments, comment)
 	}
+
+	if rows.Err() != nil {
+		return comments, rows.Err()
+	}
+
+	defer rows.Close()
+
 	return comments, nil
 }
 

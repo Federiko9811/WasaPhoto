@@ -81,16 +81,22 @@ func (db *appdbimpl) GetUsersList(str string) ([]string, error) {
 	if err != nil {
 		return users, err
 	}
-	if rows != nil {
-		for rows.Next() {
-			var username string
-			err = rows.Scan(&username)
-			if err != nil {
-				return nil, err
-			}
-			users = append(users, username)
+
+	for rows.Next() {
+		var username string
+		err = rows.Scan(&username)
+		if err != nil {
+			return nil, err
 		}
+		users = append(users, username)
 	}
+
+	if rows.Err() != nil {
+		return users, rows.Err()
+	}
+
+	defer rows.Close()
+
 	return users, nil
 }
 
@@ -103,8 +109,6 @@ func (db *appdbimpl) CheckToken(token int64) bool {
 	}
 	return count == 1
 }
-
-// HELPER FUNCTIONS
 
 func (db *appdbimpl) getUserData(id int64) (int64, string, error) {
 	var username string
@@ -175,30 +179,35 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 	if err != nil {
 		return photos, err
 	}
-	if rows != nil {
-		for rows.Next() {
-			var photo structs.Photo
 
-			err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
-			if err != nil {
-				return nil, err
-			}
+	for rows.Next() {
+		var photo structs.Photo
 
-			// Get the number of likes for the photo
-			photo.NumberOfLikes, err = db.getNumberOfLikes(photo.Id)
-			if err != nil {
-				return nil, err
-			}
-
-			// Get the number of comments for the photo
-			photo.NumberOfComments, err = db.getNumberOfComments(photo.Id)
-			if err != nil {
-				return nil, err
-			}
-
-			photos = append(photos, photo)
+		err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
+		if err != nil {
+			return nil, err
 		}
+
+		// Get the number of likes for the photo
+		photo.NumberOfLikes, err = db.getNumberOfLikes(photo.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get the number of comments for the photo
+		photo.NumberOfComments, err = db.getNumberOfComments(photo.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		photos = append(photos, photo)
 	}
+
+	if rows.Err() != nil {
+		return photos, rows.Err()
+	}
+
+	defer rows.Close()
 
 	return photos, nil
 }

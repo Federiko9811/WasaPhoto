@@ -4,8 +4,6 @@ func (db *appdbimpl) AddFollow(following int64, follow string) error {
 
 	var followed int64
 
-	//TODO USA la query in global.go
-
 	// Get the user token from the database
 	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", follow).Scan(&followed)
 	if err != nil {
@@ -23,8 +21,6 @@ func (db *appdbimpl) AddFollow(following int64, follow string) error {
 func (db *appdbimpl) RemoveFollow(following int64, unfollow string) error {
 
 	var followed int64
-
-	//TODO USA la query in global.go
 
 	// Get the user token from the database
 	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", unfollow).Scan(&followed)
@@ -45,8 +41,6 @@ func (db *appdbimpl) AddBan(banning int64, ban string) error {
 
 	var banned int64
 
-	//TODO USA la query in global.go
-
 	// Get the user token from the database
 	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", ban).Scan(&banned)
 	if err != nil {
@@ -65,8 +59,6 @@ func (db *appdbimpl) AddBan(banning int64, ban string) error {
 func (db *appdbimpl) RemoveBan(banning int64, ban string) error {
 
 	var banned int64
-
-	//TODO USA la query in global.go
 
 	// Get the user token from the database
 	err := db.c.QueryRow("SELECT token FROM user WHERE username=?", ban).Scan(&banned)
