@@ -1,12 +1,18 @@
+### GET Stream
+GET http://localhost:3000/user/1/photos/
+Content-Type: application/json
+Authorization: Bearer 1
+
+
 ### Delete Photo (Funzionate)
 DELETE  http://localhost:3000/user/2/photos/4/
 Content-Type: application/json
 Authorization: Bearer 2
 
 ### Like Photo (Funzionate)
-PUT http://localhost:3000/user/1/photos/8/likes/3
+PUT http://localhost:3000/user/2/photos/10/likes/1
 Content-Type: application/json
-Authorization: Bearer 3
+Authorization: Bearer 1
 
 
 ### Unlike Photo (Funzionate)

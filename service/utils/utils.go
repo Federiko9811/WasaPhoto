@@ -49,6 +49,17 @@ func ReturnBadRequestMessage(w http.ResponseWriter, err error) {
 	}
 }
 
+func ReturnBadRequestCustomMessage(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusBadRequest)
+	res := structs.Message{
+		Message: "Bad Request the request is not valid",
+	}
+	err := json.NewEncoder(w).Encode(res)
+	ReturnInternalServerError(w, err)
+	return
+
+}
+
 func ReturnForbiddenMessage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusForbidden)
 	res := structs.Message{

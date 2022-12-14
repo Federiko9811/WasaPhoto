@@ -37,6 +37,14 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 		return
 	}
 
+	// Check if the photo exists
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
 	// Check if the request user is the owner of the photo
 	check, err := rt.db.CheckPhotoOwner(token, photoId)
 	if err != nil || !check {
@@ -63,6 +71,7 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
+
 	var owner int64
 	owner, err = rt.db.GetPhotoOwner(photoId)
 	if err != nil {
@@ -70,7 +79,16 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 		return
 	}
 
-	ban, err := rt.db.CheckBan(owner, token)
+	// Check if the photo exists and the owner is correct
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	var ban bool
+	ban, err = rt.db.CheckBan(owner, token)
 	if err != nil || ban {
 		utils.ReturnForbiddenMessage(w)
 		return
@@ -96,10 +114,29 @@ func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httproute
 		return
 	}
 
+	pathOwner, err := strconv.ParseInt(p.ByName("userId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	// Check if the photo exists and the owner is correct
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
 	var owner int64
 	owner, err = rt.db.GetPhotoOwner(photoId)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if owner != pathOwner {
+		utils.ReturnBadRequestCustomMessage(w)
 		return
 	}
 
@@ -135,10 +172,29 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 		return
 	}
 
+	pathOwner, err := strconv.ParseInt(p.ByName("userId"), 10, 64)
+	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	// Check if the photo exists and the owner is correct
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
 	var owner int64
 	owner, err = rt.db.GetPhotoOwner(photoId)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	if owner != pathOwner {
+		utils.ReturnBadRequestCustomMessage(w)
 		return
 	}
 
@@ -170,6 +226,14 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httpro
 
 	photoId, err := strconv.ParseInt(p.ByName("photoId"), 10, 64)
 	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	// Check if the photo exists and the owner is correct
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
 		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
@@ -209,6 +273,14 @@ func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p ht
 
 	photoId, err := strconv.ParseInt(p.ByName("photoId"), 10, 64)
 	if err != nil {
+		utils.ReturnBadRequestMessage(w, err)
+		return
+	}
+
+	// Check if the photo exists and the owner is correct
+	var existence bool
+	existence, err = rt.db.CheckPhotoExistence(photoId)
+	if err != nil || !existence {
 		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
@@ -306,4 +378,20 @@ func (rt *_router) deleteComment(w http.ResponseWriter, _ *http.Request, p httpr
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (rt *_router) getMyStream(w http.ResponseWriter, _ *http.Request, _ httprouter.Params, token int64) {
+	w.Header().Set("Content-Type", "application/json")
+
+	photos, err := rt.db.GetMyStream(token)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(photos)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
 }

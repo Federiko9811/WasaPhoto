@@ -123,7 +123,7 @@ func (db *appdbimpl) getUserData(id int64) (int64, string, error) {
 	return token, username, nil
 }
 
-func (db *appdbimpl) getNumberOfLikes(photoId int64) (int64, error) {
+func (db *appdbimpl) GetNumberOfLikes(photoId int64) (int64, error) {
 	var count int64
 
 	// Get the user token from the database
@@ -135,7 +135,7 @@ func (db *appdbimpl) getNumberOfLikes(photoId int64) (int64, error) {
 	return count, nil
 }
 
-func (db *appdbimpl) getNumberOfComments(photoId int64) (int64, error) {
+func (db *appdbimpl) GetNumberOfComments(photoId int64) (int64, error) {
 	var count int64
 
 	// Get the user token from the database
@@ -189,13 +189,13 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 		}
 
 		// Get the number of likes for the photo
-		photo.NumberOfLikes, err = db.getNumberOfLikes(photo.Id)
+		photo.NumberOfLikes, err = db.GetNumberOfLikes(photo.Id)
 		if err != nil {
 			return nil, err
 		}
 
 		// Get the number of comments for the photo
-		photo.NumberOfComments, err = db.getNumberOfComments(photo.Id)
+		photo.NumberOfComments, err = db.GetNumberOfComments(photo.Id)
 		if err != nil {
 			return nil, err
 		}

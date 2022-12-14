@@ -14,6 +14,9 @@ type AppDatabase interface {
 	CheckPhotoOwner(token int64, photoId int64) (bool, error)
 	GetPhotoOwner(photoId int64) (int64, error)
 	CheckLike(token int64, photoId int64) (bool, error)
+	GetNumberOfLikes(photoId int64) (int64, error)
+	GetNumberOfComments(photoId int64) (int64, error)
+	CheckPhotoExistence(photoId int64) (bool, error)
 
 	GetUserToken(username string) (int64, error)
 	SetUserName(token int64, username string) error
@@ -38,6 +41,7 @@ type AppDatabase interface {
 	GetCommentOwner(commentId int64) (int64, error)
 	GetComment(commentId int64) (structs.FullDataComment, error)
 	DeleteComment(commentId int64) error
+	GetMyStream(token int64) ([]structs.Photo, error)
 }
 
 type appdbimpl struct {

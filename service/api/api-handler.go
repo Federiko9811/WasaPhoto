@@ -9,53 +9,53 @@ func (rt *_router) Handler() http.Handler {
 	// Register routes
 	rt.router.GET("/", rt.getHelloWorld)
 
-	//PROFILE
+	// PROFILE
 
-	//login
+	// login
 	rt.router.POST("/session", rt.doLogin)
-	//update username
+	// update username
 	rt.router.PUT("/user/:userId/update-username", rt.authWrapper(rt.setMyUserName))
-	//get profile page
+	// get profile page
 	rt.router.GET("/user/:userId/profile-page/:username", rt.authWrapper(rt.getUserProfile))
-	//search profiles by username
+	// search profiles by username
 	rt.router.GET("/user/:userId/search/:username", rt.authWrapper(rt.searchUser))
 
 	// SOCIAL
 
-	//follow user
+	// follow user
 	rt.router.PUT("/user/:userId/follow/:username", rt.authWrapper(rt.followUser))
-	//unfollow user
+	// unfollow user
 	rt.router.DELETE("/user/:userId/follow/:username", rt.authWrapper(rt.unfollowUser))
-	//ban user
+	// ban user
 	rt.router.PUT("/user/:userId/ban/:username", rt.authWrapper(rt.banUser))
-	//unban user
+	// unban user
 	rt.router.DELETE("/user/:userId/ban/:username", rt.authWrapper(rt.unbanUser))
 
 	// PHOTO INERACTION
 
-	//return the photos of the followed users
-	rt.router.GET("/user/:userId/photos/", rt.authWrapper(nil))
-	//post a new photo
+	// return the photos of the followed users
+	rt.router.GET("/user/:userId/photos/", rt.authWrapper(rt.getMyStream))
+	// post a new photo
 	rt.router.POST("/user/:userId/photos/", rt.authWrapper(rt.uploadPhoto))
-	//get a photo
+	// get a photo
 	rt.router.GET("/user/:userId/photos/:photoId/", rt.authWrapper(rt.getPhoto))
-	//delete a photo
+	// delete a photo
 	rt.router.DELETE("/user/:userId/photos/:photoId/", rt.authWrapper(rt.deletePhoto))
 
-	//like a photo
+	// like a photo
 	rt.router.PUT("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authLikeWrapper(rt.likePhoto))
-	//unlike a photo
+	// unlike a photo
 	rt.router.DELETE("/user/:userId/photos/:photoId/likes/:authenticatedUserId", rt.authLikeWrapper(rt.unlikePhoto))
-	//get the comments of a photo
+	// get the comments of a photo
 	rt.router.GET("/user/:userId/photos/:photoId/comments/", rt.authWrapperNoPath(rt.getPhotoComments))
-	//add a comment to a photo
+	// add a comment to a photo
 	rt.router.POST("/user/:userId/photos/:photoId/comments/", rt.authWrapperNoPath(rt.commentPhoto))
 
-	//COMMENTS
+	// COMMENTS
 
-	//get the comment of a photo
+	// get the comment of a photo
 	rt.router.GET("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.getComment))
-	//delete a comment
+	// delete a comment
 	rt.router.DELETE("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.deleteComment))
 
 	return rt.router

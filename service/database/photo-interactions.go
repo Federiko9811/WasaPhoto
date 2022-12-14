@@ -100,3 +100,51 @@ func (db *appdbimpl) DeleteComment(commentId int64) error {
 	_, err := db.c.Exec("DELETE FROM comment WHERE id=?", commentId)
 	return err
 }
+
+func (db *appdbimpl) GetMyStream(token int64) ([]structs.Photo, error) {
+	rows, err := db.c.Query("select id, owner, created_at from photo where owner not in (select banning from ban where banned=?) and owner != ? order by created_at desc", token, token)
+	if err != nil {
+		return nil, err
+	}
+
+	var photos []structs.Photo
+	for rows.Next() {
+		var photo structs.Photo
+
+		err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get the number of likes for the photo
+		photo.NumberOfLikes, err = db.GetNumberOfLikes(photo.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		// Get the number of comments for the photo
+		photo.NumberOfComments, err = db.GetNumberOfComments(photo.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		photos = append(photos, photo)
+	}
+
+	if rows.Err() != nil {
+		return photos, rows.Err()
+	}
+
+	defer rows.Close()
+
+	return photos, nil
+}
+
+func (db *appdbimpl) CheckPhotoExistence(photoId int64) (bool, error) {
+	var count int64
+	err := db.c.QueryRow("SELECT count(*) FROM photo WHERE id=?", photoId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count == 1, nil
+}

@@ -42,7 +42,6 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 	}
 }
 
-// setProfile update the profile of the user
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httprouter.Params, pathToken int64) {
 	w.Header().Set("content-type", "application/json")
 
@@ -83,7 +82,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 		return
 	}
 
-	// Get user profile from database
 	profile, err := rt.db.GetUserProfile(username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
