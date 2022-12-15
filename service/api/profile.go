@@ -59,7 +59,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	//Update username in database for the user with the given token
+	// Update username in database for the user with the given token
 	err = rt.db.SetUserName(pathToken, username.Username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)

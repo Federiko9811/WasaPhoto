@@ -56,8 +56,6 @@ func ReturnBadRequestCustomMessage(w http.ResponseWriter) {
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
-	return
-
 }
 
 func ReturnForbiddenMessage(w http.ResponseWriter) {

@@ -66,7 +66,7 @@ func (db *appdbimpl) RemoveBan(banning int64, ban string) error {
 		return err
 	}
 
-	//Remove the ban from the database
+	// Remove the ban from the database
 	_, err = db.c.Exec("DELETE FROM ban WHERE banning=? AND banned=?", banning, banned)
 	if err != nil {
 		return err
