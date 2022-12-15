@@ -200,6 +200,8 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 			return nil, err
 		}
 
+		photo.IsLiked = false
+
 		photos = append(photos, photo)
 	}
 

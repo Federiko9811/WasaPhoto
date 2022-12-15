@@ -1,7 +1,7 @@
 ### GET Stream
-GET http://localhost:3000/user/1/photos/
+GET http://localhost:3000/user/3/photos/
 Content-Type: application/json
-Authorization: Bearer 1
+Authorization: Bearer 3
 
 
 ### Delete Photo (Funzionate)

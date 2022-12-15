@@ -12,8 +12,9 @@ export default {
 			this.loading = true;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
+				let response = await this.$axios.post("/session", {name: "Federiko98"});
+				this.some_data = response.data.identifier;
+				console.log(this.some_data);
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -21,7 +22,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.refresh()
+		this.refresh();
 	}
 }
 </script>

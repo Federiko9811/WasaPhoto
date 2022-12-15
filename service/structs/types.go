@@ -30,6 +30,7 @@ type Photo struct {
 	CreatedAt        string `json:"createdAt"`
 	NumberOfLikes    int64  `json:"numberOfLikes"`
 	NumberOfComments int64  `json:"numberOfComments"`
+	IsLiked          bool   `json:"isLiked"`
 }
 
 type UserProfile struct {
