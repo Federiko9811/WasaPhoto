@@ -31,6 +31,7 @@ type FullDataComment struct {
 type Photo struct {
 	Id               int64  `json:"id"`
 	Owner            int64  `json:"owner"`
+	OwnerUsername    string `json:"ownerUsername"`
 	CreatedAt        string `json:"createdAt"`
 	NumberOfLikes    int64  `json:"numberOfLikes"`
 	NumberOfComments int64  `json:"numberOfComments"`

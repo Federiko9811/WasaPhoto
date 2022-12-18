@@ -175,7 +175,7 @@ func (db *appdbimpl) getListOfPhotos(token int64, requestUser int64) ([]structs.
 	var photos []structs.Photo
 
 	// Get all the photos of the user
-	rows, err := db.c.Query("SELECT id, owner, created_at FROM photo WHERE owner=?", token)
+	rows, err := db.c.Query("SELECT id, owner, u.username, created_at FROM photo join user u on u.token = photo.owner WHERE owner=?", token)
 	if err != nil {
 		return photos, err
 	}
@@ -183,7 +183,7 @@ func (db *appdbimpl) getListOfPhotos(token int64, requestUser int64) ([]structs.
 	for rows.Next() {
 		var photo structs.Photo
 
-		err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
+		err = rows.Scan(&photo.Id, &photo.Owner, &photo.OwnerUsername, &photo.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

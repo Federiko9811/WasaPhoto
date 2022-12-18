@@ -112,7 +112,7 @@ func (db *appdbimpl) DeleteComment(commentId int64) error {
 }
 
 func (db *appdbimpl) GetMyStream(token int64) ([]structs.Photo, error) {
-	rows, err := db.c.Query("select id, owner, created_at from photo where owner not in (select banning from ban where banned=?) and owner != ? and owner in (select followed from follow where following=?) order by created_at desc", token, token, token)
+	rows, err := db.c.Query("select id, owner, u.username, created_at from photo join user u on u.token = photo.owner where owner not in (select banning from ban where banned=?) and owner != ? and owner in (select followed from follow where following=?) order by created_at desc", token, token, token)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (db *appdbimpl) GetMyStream(token int64) ([]structs.Photo, error) {
 	for rows.Next() {
 		var photo structs.Photo
 
-		err = rows.Scan(&photo.Id, &photo.Owner, &photo.CreatedAt)
+		err = rows.Scan(&photo.Id, &photo.Owner, &photo.OwnerUsername, &photo.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

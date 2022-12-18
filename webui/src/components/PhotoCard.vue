@@ -107,7 +107,10 @@
 </script>
 
 <template>
-	<div class="p-3 card gap-3">
+	<div class="p-3 card gap-2">
+		<RouterLink :to="'/profile/'+$props.photo.ownerUsername" class="fw-bold text-black" style="text-decoration: none" >
+			{{ $props.photo.ownerUsername }}
+		</RouterLink>
 		<img
 			:src="img"
 			:alt='"ID: " + photo.id'
@@ -173,13 +176,12 @@
 				<div v-for="comment in list_of_comments" class="d-flex flex-column gap-2">
 					<div class="d-flex flex-column gap-2 bg-light p-2 rounded border">
 						<div class="d-flex justify-content-between">
-							<div class="fw-bold">
-								{{comment.owner}}
-							</div>
+							<RouterLink :to="'/profile/'+comment.owner" class="fw-bold text-black" style="text-decoration: none" >
+								{{ comment.owner }}
+							</RouterLink>
 							<div class="small">
 								{{comment.created_at}}
 							</div>
-
 						</div>
 						<div>
 							{{comment.content}}
