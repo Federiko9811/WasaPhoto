@@ -22,7 +22,7 @@ Authorization: Bearer 2
 
 
 ### Post Comment (Funzionate)
-POST http://localhost:3000/user/1/photos/8/comments/
+POST http://localhost:3000/user/1/photos/14/comments/
 Content-Type: application/json
 Authorization: Bearer 2
 

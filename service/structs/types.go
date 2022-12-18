@@ -12,6 +12,10 @@ type Message struct {
 	Message string `json:"message"`
 }
 
+type CreatedCommentMessage struct {
+	CommentId int64 `json:"comment_id"`
+}
+
 type Comment struct {
 	Comment string `json:"comment"`
 }
@@ -20,7 +24,7 @@ type FullDataComment struct {
 	Id        int64  `json:"id"`
 	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
-	Owner     int64  `json:"owner"`
+	Owner     string `json:"owner"`
 	Photo     int64  `json:"photo"`
 }
 

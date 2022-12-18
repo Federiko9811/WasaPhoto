@@ -263,13 +263,19 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httpro
 		return
 	}
 
-	err = rt.db.CommentPhoto(token, photoId, comment.Comment)
+	var newId int64
+	newId, err = rt.db.CommentPhoto(token, photoId, comment.Comment)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
 	}
 
-	utils.ReturnCreatedMessage(w)
+	w.WriteHeader(http.StatusCreated)
+	res := structs.CreatedCommentMessage{
+		CommentId: newId,
+	}
+	err = json.NewEncoder(w).Encode(res)
+	utils.ReturnInternalServerError(w, err)
 }
 
 func (rt *_router) getPhotoComments(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {

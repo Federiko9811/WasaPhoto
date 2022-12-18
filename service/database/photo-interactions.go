@@ -54,13 +54,23 @@ func (db *appdbimpl) CheckLike(token int64, photoId int64) (bool, error) {
 	return count == 1, nil
 }
 
-func (db *appdbimpl) CommentPhoto(token int64, photoId int64, content string) error {
-	_, err := db.c.Exec("INSERT INTO comment (owner, content, photo) VALUES (?, ?, ?)", token, content, photoId)
-	return err
+func (db *appdbimpl) CommentPhoto(token int64, photoId int64, content string) (int64, error) {
+	res, err := db.c.Exec("INSERT INTO comment (owner, content, photo) VALUES (?, ?, ?)", token, content, photoId)
+	if err != nil {
+		return -1, err
+	}
+
+	var lastId int64
+	lastId, err = res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+
+	return lastId, nil
 }
 
 func (db *appdbimpl) GetPhotoComments(photoId int64) ([]structs.FullDataComment, error) {
-	rows, err := db.c.Query("SELECT * FROM comment WHERE photo=?", photoId)
+	rows, err := db.c.Query("SELECT id, content, created_at, u.username, photo  FROM comment join user u on u.token = comment.owner WHERE photo=? order by created_at desc", photoId)
 	if err != nil {
 		return nil, err
 	}
