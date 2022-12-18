@@ -60,7 +60,7 @@
 			<h5>Followers: {{profile.numberOfFollowers}}</h5>
 			<h5>Following: {{profile.numberOfFollowing}}</h5>
 		</div>
-<!--		List all photos using photocard-->
+		<!--List all photos using photocard-->
 		<div class="d-flex flex-wrap gap-3">
 			<PhotoCard v-for="photo in profile.photos" :key="photo.id" :photo="photo"/>
 		</div>

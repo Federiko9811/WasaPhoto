@@ -25,7 +25,7 @@ func (db *appdbimpl) GetUserToken(username string) (int64, error) {
 }
 
 // GetUserProfile returns the user profile for the given user token.
-func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
+func (db *appdbimpl) GetUserProfile(us string, requestUser int64) (structs.UserProfile, error) {
 	var profile structs.UserProfile
 
 	// Get the user token from the database
@@ -44,7 +44,7 @@ func (db *appdbimpl) GetUserProfile(us string) (structs.UserProfile, error) {
 	profile.Token = actualToken
 	profile.Username = username
 
-	profile.Photos, err = db.getListOfPhotos(profile.Token)
+	profile.Photos, err = db.getListOfPhotos(profile.Token, requestUser)
 	if err != nil {
 		return profile, err
 	}
@@ -171,7 +171,7 @@ func (db *appdbimpl) getNumberFollowing(token int64) (int64, error) {
 	return count, nil
 }
 
-func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
+func (db *appdbimpl) getListOfPhotos(token int64, requestUser int64) ([]structs.Photo, error) {
 	var photos []structs.Photo
 
 	// Get all the photos of the user
@@ -200,7 +200,10 @@ func (db *appdbimpl) getListOfPhotos(token int64) ([]structs.Photo, error) {
 			return nil, err
 		}
 
-		photo.IsLiked = false
+		photo.IsLiked, err = db.CheckLike(requestUser, photo.Id)
+		if err != nil {
+			return nil, err
+		}
 
 		photos = append(photos, photo)
 	}

@@ -73,7 +73,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	utils.ReturnInternalServerError(w, err)
 }
 
-func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p httprouter.Params, _ int64) {
+func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
 	w.Header().Set("content-type", "application/json")
 
 	username := p.ByName("username")
@@ -82,7 +82,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 		return
 	}
 
-	profile, err := rt.db.GetUserProfile(username)
+	profile, err := rt.db.GetUserProfile(username, token)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return

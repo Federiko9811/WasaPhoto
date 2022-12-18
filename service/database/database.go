@@ -21,7 +21,7 @@ type AppDatabase interface {
 	GetUserToken(username string) (int64, error)
 	SetUserName(token int64, username string) error
 	CheckToken(token int64) bool
-	GetUserProfile(username string) (structs.UserProfile, error)
+	GetUserProfile(username string, requestUser int64) (structs.UserProfile, error)
 	GetUsersList(username string) ([]string, error)
 
 	AddFollow(following int64, follow string) error

@@ -102,7 +102,11 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 	}
 
 	w.Header().Set("Content-Type", "image/png")
-	_, _ = w.Write(photo)
+	_, err = w.Write(photo)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
 }
 
 func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {

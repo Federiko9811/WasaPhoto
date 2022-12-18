@@ -38,6 +38,11 @@ import { RouterView } from 'vue-router'
 							</RouterLink>
 						</li>
 						<li class="nav-item">
+							<RouterLink to='/add-photo' class="nav-link">
+								Add Photo
+							</RouterLink>
+						</li>
+						<li class="nav-item">
 							<div class="nav-link" @click="handleLogout">
 								Logout
 							</div>
