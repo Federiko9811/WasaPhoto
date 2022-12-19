@@ -27,8 +27,8 @@
 		methods: {
 			getPhoto() {
 				const identifier = localStorage.getItem("identifier")
-				this.$axios.get(`/user/${identifier}/photos/${this.$props.photo.id}/`).then((response) => {
-					this.img = response.data;
+				this.$axios.get(`/user/${identifier}/photos/${this.$props.photo.id}/`, {responseType: "blob"}).then((response) => {
+					this.img = URL.createObjectURL(response.data)
 				}).catch(
 					(error) => {
 						console.log(error);
@@ -114,7 +114,7 @@
 		<img
 			:src="img"
 			:alt='"ID: " + photo.id'
-			class="img-thumbnail"
+			class="img-fluid"
 			style="width: 300px; height: 300px;"
 		>
 		<div class="fst-italic small">

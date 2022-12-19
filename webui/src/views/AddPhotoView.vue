@@ -12,9 +12,7 @@
 			addPhoto() {
 				this.loading = true
 				const id = localStorage.getItem("identifier")
-				const formData = new FormData()
-				formData.append("photo", this.$refs.photo.files[0])
-				this.$axios.post(`/user/${id}/photos/`, formData).then((response) => {
+				this.$axios.post(`/user/${id}/photos/`, this.$refs.photo.files[0]).then((response) => {
 					console.log(response.data)
 				}).catch(
 					(error) => {
