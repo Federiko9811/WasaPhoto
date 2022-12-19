@@ -16,9 +16,9 @@ Authorization: Bearer 1
 }
 
 ### GetUserProfile
-GET http://localhost:3000/user/1/profile-page/Federiko9811
+GET http://localhost:3000/user/4/profile-page/Lorypowa04
 Content-Type: application/json
-Authorization: Bearer 1
+Authorization: Bearer 4
 
 
 ### SearchUsers (Funzionante)

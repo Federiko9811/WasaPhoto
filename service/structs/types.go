@@ -45,4 +45,6 @@ type UserProfile struct {
 	NumberOfPhotos    int64   `json:"numberOfPhotos"`
 	NumberOfFollowers int64   `json:"numberOfFollowers"`
 	NumberOfFollowing int64   `json:"numberOfFollowing"`
+	IsFollowed        bool    `json:"isFollowed"`
+	IsOwner           bool    `json:"isOwner"`
 }

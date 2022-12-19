@@ -33,7 +33,23 @@
 						console.log(error);
 					}
 				);
-			}
+			},
+			followUser() {
+				const id = localStorage.getItem("identifier")
+				this.$axios.put(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
+					this.getProfile();
+				}).catch((error) => {
+					console.log(error);
+				});
+			},
+			unfollowUser() {
+				const id = localStorage.getItem("identifier")
+				this.$axios.delete(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
+					this.getProfile();
+				}).catch((error) => {
+					console.log(error);
+				});
+			},
 		},
 		mounted() {
 			if (!localStorage.getItem("identifier")) {
@@ -57,6 +73,27 @@
 			<h5>Photos: {{profile.numberOfPhotos}}</h5>
 			<h5>Followers: {{profile.numberOfFollowers}}</h5>
 			<h5>Following: {{profile.numberOfFollowing}}</h5>
+		</div>
+		<div>
+			<div class="d-flex gap-5">
+				<button
+					class="btn btn-primary"
+					v-if="!profile.isFollowed && !profile.isOwner"
+					@click.prevent="followUser"
+				>
+					Follow
+				</button>
+				<button
+					class="btn btn-primary"
+					v-if="profile.isFollowed && !profile.isOwner"
+					@click.prevent="unfollowUser"
+				>
+					Unfollow
+				</button>
+				<button class="btn btn-primary" v-if="profile.isOwner">
+					Edit Profile
+				</button>
+			</div>
 		</div>
 		<!--List all photos using photocard-->
 		<div class="d-flex flex-wrap justify-content-center gap-3">
