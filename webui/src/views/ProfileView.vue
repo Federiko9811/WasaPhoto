@@ -1,5 +1,6 @@
 <script>
 	import PhotoCard from "../components/PhotoCard.vue";
+	import router from "../router";
 
 	export default {
 		name: "ProfileView",
@@ -15,10 +16,13 @@
 					numberOfPhotos: 0,
 					isBanned: false,
 					isFollowed: false,
+					isOwner: false,
 				},
 
 				tempIsBanned: false,
 				tempIsFollowed: false,
+				tempUsername: "",
+				showEditProfile: false,
 			}
 		},
 		methods: {
@@ -26,13 +30,14 @@
 				this.loading = true
 
 				//get username from the path
-				const x = this.$route.params.username
+				const pathUsername = this.$route.params.username
 				const id = localStorage.getItem("identifier")
 
-				this.$axios.get(`/user/${id}/profile-page/${x}`).then((response) => {
+				this.$axios.get(`/user/${id}/profile-page/${pathUsername}`).then((response) => {
 					this.profile = response.data;
 					this.tempIsBanned = this.profile.isBanned;
 					this.tempIsFollowed = this.profile.isFollowed;
+					this.tempUsername = this.profile.username;
 					this.loading = false;
 				}).catch(
 					(error) => {
@@ -73,6 +78,16 @@
 					console.log(error);
 				});
 			},
+			editProfile() {
+				const id = localStorage.getItem("identifier")
+				this.$axios.put(`/user/${id}/update-username`, {name: this.tempUsername}).then(() => {
+					this.showEditProfile = false;
+					localStorage.setItem("username", this.tempUsername);
+					router.push(`/profile/${this.tempUsername}`);
+				}).catch((error) => {
+					console.log(error);
+				});
+			},
 		},
 		mounted() {
 			if (!localStorage.getItem("identifier")) {
@@ -89,8 +104,31 @@
 <template>
 <!--	Profile page using bootstrap-->
 	<div class="container d-flex flex-column min-vh-100 align-items-center my-5 gap-3">
-		<div>
-			<h1>{{profile.username}}</h1>
+		<div v-if="!showEditProfile">
+			<h1>{{this.tempUsername}}</h1>
+		</div>
+		<div v-if="showEditProfile && profile.isOwner" class="d-flex align-items-center align-items-center bg-light p-3 rounded">
+			<h2>
+				<input type="text" v-model="this.tempUsername" style="outline: none; border: none; background: none">
+			</h2>
+			<div role="button" @click.prevent="editProfile">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					width="3em"
+					height="3em"
+					class="text-primary"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+					/>
+				</svg>
+			</div>
 		</div>
 		<div class="d-flex gap-5">
 			<h5>Photos: {{profile.numberOfPhotos}}</h5>
@@ -127,7 +165,7 @@
 				>
 					Unban
 				</button>
-				<button class="btn btn-primary" v-if="profile.isOwner">
+				<button class="btn btn-primary" v-if="profile.isOwner" @click.prevent="() => this.showEditProfile=!this.showEditProfile">
 					Edit Profile
 				</button>
 			</div>
