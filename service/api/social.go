@@ -136,7 +136,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, _ *http.Request, p httproute
 
 	var check bool
 	check, err = rt.db.CheckBan(token, token2)
-	if err != nil || check {
+	if err != nil || !check {
 		utils.ReturnForbiddenMessage(w)
 		return
 	}

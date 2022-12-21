@@ -13,7 +13,12 @@
 					numberOfFollowers: 0,
 					numberOfFollowing: 0,
 					numberOfPhotos: 0,
+					isBanned: false,
+					isFollowed: false,
 				},
+
+				tempIsBanned: false,
+				tempIsFollowed: false,
 			}
 		},
 		methods: {
@@ -26,6 +31,8 @@
 
 				this.$axios.get(`/user/${id}/profile-page/${x}`).then((response) => {
 					this.profile = response.data;
+					this.tempIsBanned = this.profile.isBanned;
+					this.tempIsFollowed = this.profile.isFollowed;
 					this.loading = false;
 				}).catch(
 					(error) => {
@@ -37,7 +44,7 @@
 			followUser() {
 				const id = localStorage.getItem("identifier")
 				this.$axios.put(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
-					this.getProfile();
+					this.tempIsFollowed = true;
 				}).catch((error) => {
 					console.log(error);
 				});
@@ -45,7 +52,23 @@
 			unfollowUser() {
 				const id = localStorage.getItem("identifier")
 				this.$axios.delete(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
-					this.getProfile();
+					this.tempIsFollowed = false;
+				}).catch((error) => {
+					console.log(error);
+				});
+			},
+			banUser() {
+				const id = localStorage.getItem("identifier")
+				this.$axios.put(`/user/${id}/ban/${this.profile.username}`,).then(() => {
+					this.tempIsBanned = true;
+				}).catch((error) => {
+					console.log(error);
+				});
+			},
+			unbanUser() {
+				const id = localStorage.getItem("identifier")
+				this.$axios.delete(`/user/${id}/ban/${this.profile.username}`,).then(() => {
+					this.tempIsBanned = false;
 				}).catch((error) => {
 					console.log(error);
 				});
@@ -78,17 +101,31 @@
 			<div class="d-flex gap-5">
 				<button
 					class="btn btn-primary"
-					v-if="!profile.isFollowed && !profile.isOwner"
+					v-if="!this.tempIsFollowed && !profile.isOwner"
 					@click.prevent="followUser"
 				>
 					Follow
 				</button>
 				<button
 					class="btn btn-primary"
-					v-if="profile.isFollowed && !profile.isOwner"
+					v-if="this.tempIsFollowed && !profile.isOwner"
 					@click.prevent="unfollowUser"
 				>
 					Unfollow
+				</button>
+				<button
+					class="btn btn-danger"
+					v-if="!this.tempIsBanned && !profile.isOwner"
+					@click.prevent="banUser"
+				>
+					Ban
+				</button>
+				<button
+					class="btn btn-danger"
+					v-if="this.tempIsBanned && !profile.isOwner"
+					@click.prevent="unbanUser"
+				>
+					Unban
 				</button>
 				<button class="btn btn-primary" v-if="profile.isOwner">
 					Edit Profile

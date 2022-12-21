@@ -63,12 +63,19 @@ func (db *appdbimpl) GetUserProfile(us string, requestUser int64) (structs.UserP
 
 	if requestUser == profile.Token {
 		profile.IsFollowed = false
+		profile.IsBanned = false
 		profile.IsOwner = true
 	} else {
 		profile.IsFollowed, err = db.CheckFollow(requestUser, profile.Token)
 		if err != nil {
 			return profile, err
 		}
+
+		profile.IsBanned, err = db.CheckBan(requestUser, profile.Token)
+		if err != nil {
+			return profile, err
+		}
+
 		profile.IsOwner = false
 	}
 

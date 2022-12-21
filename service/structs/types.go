@@ -47,4 +47,5 @@ type UserProfile struct {
 	NumberOfFollowing int64   `json:"numberOfFollowing"`
 	IsFollowed        bool    `json:"isFollowed"`
 	IsOwner           bool    `json:"isOwner"`
+	IsBanned          bool    `json:"isBanned"`
 }
