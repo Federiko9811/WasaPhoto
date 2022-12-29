@@ -677,24 +677,24 @@ paths:
       - { $ref: "#/components/parameters/Username" }
       - { $ref: "#/components/parameters/PhotoId" }
       - { $ref: "#/components/parameters/CommentId" }
-    get:
-      tags: [ "comments" ]
-      summary: Returns a comment
-      description: |-
-        Return the comment passed in the path.
-        There is no need to be logged in to see the comment.
-        If the token in the header is not valid, the response is 401 Unauthorized.
-        If the request user is banned from the owner of the comment, the response is 403 Forbidden.
-        If the comment does not exist, returns 404 Not Found.
-      operationId: getComment
-      responses:
-        200: { $ref: '#/components/responses/Comment' }
-        401: { $ref: "#/components/responses/UnauthorizedError" }
-        403: { $ref: '#/components/responses/ForbiddenError' }
-        404: { $ref: '#/components/responses/NotFoundError' }
-        500: { $ref: "#/components/responses/InternalServerError" }
-      security:
-        - bearerAuth: [ ]
+#    get:
+#      tags: [ "comments" ]
+#      summary: Returns a comment
+#      description: |-
+#        Return the comment passed in the path.
+#        There is no need to be logged in to see the comment.
+#        If the token in the header is not valid, the response is 401 Unauthorized.
+#        If the request user is banned from the owner of the comment, the response is 403 Forbidden.
+#        If the comment does not exist, returns 404 Not Found.
+#      operationId: getComment
+#      responses:
+#        200: { $ref: '#/components/responses/Comment' }
+#        401: { $ref: "#/components/responses/UnauthorizedError" }
+#        403: { $ref: '#/components/responses/ForbiddenError' }
+#        404: { $ref: '#/components/responses/NotFoundError' }
+#        500: { $ref: "#/components/responses/InternalServerError" }
+#      security:
+#        - bearerAuth: [ ]
     delete:
       tags: [ "comments" ]
       summary: Delete a comment
