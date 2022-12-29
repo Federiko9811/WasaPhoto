@@ -43,6 +43,11 @@ import { RouterView } from 'vue-router'
 							</RouterLink>
 						</li>
 						<li class="nav-item">
+							<RouterLink to='/search' class="nav-link">
+								Search
+							</RouterLink>
+						</li>
+						<li class="nav-item">
 							<div class="nav-link" @click="handleLogout">
 								Logout
 							</div>

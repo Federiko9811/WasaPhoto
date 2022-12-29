@@ -14,6 +14,7 @@
 				show_comments: false,
 				comment: "",
 				username_req_user: localStorage.getItem("username"),
+				identifier: localStorage.getItem("identifier")
 			}
 		},
  		props: {
@@ -24,8 +25,7 @@
 		},
 		methods: {
 			getPhoto() {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.get(`/user/${identifier}/photos/${this.$props.photo.id}/`, {responseType: "blob"}).then((response) => {
+				this.$axios.get(`/user/${this.identifier}/photos/${this.$props.photo.id}/`, {responseType: "blob"}).then((response) => {
 					this.img = URL.createObjectURL(response.data)
 				}).catch(
 					(error) => {
@@ -34,8 +34,7 @@
 				);
 			},
 			addLike() {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.put(`/user/${this.$props.photo.owner}/photos/${this.$props.photo.id}/likes/${identifier}`).then((response) => {
+				this.$axios.put(`/user/${this.$props.photo.owner}/photos/${this.$props.photo.id}/likes/${this.identifier}`).then(() => {
 					this.temp_photo.numberOfLikes += 1;
 					this.temp_photo.isLiked = true;
 				}).catch(
@@ -45,8 +44,7 @@
 				)
 			},
 			removeLike() {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.delete(`/user/${this.$props.photo.owner}/photos/${this.$props.photo.id}/likes/${identifier}`).then((response) => {
+				this.$axios.delete(`/user/${this.$props.photo.owner}/photos/${this.$props.photo.id}/likes/${this.identifier}`).then(() => {
 					this.temp_photo.numberOfLikes -= 1;
 					this.temp_photo.isLiked = false;
 				}).catch(
@@ -56,8 +54,7 @@
 				)
 			},
 			addComment() {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.post(`/user/${identifier}/photos/${this.$props.photo.id}/comments/`, {
+				this.$axios.post(`/user/${this.identifier}/photos/${this.$props.photo.id}/comments/`, {
 					comment: this.comment,
 				}).then((r) => {
 					this.temp_photo.numberOfComments += 1;
@@ -76,8 +73,7 @@
 				)
 			},
 			getComments() {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.get(`/user/${identifier}/photos/${this.$props.photo.id}/comments/`).then((response) => {
+				this.$axios.get(`/user/${this.identifier}/photos/${this.$props.photo.id}/comments/`).then((response) => {
 					this.list_of_comments = response.data;
 				}).catch(
 					(error) => {
@@ -86,10 +82,18 @@
 				);
 			},
 			deleteComment(commentId) {
-				const identifier = localStorage.getItem("identifier")
-				this.$axios.delete(`/user/${identifier}/photos/${this.$props.photo.id}/comments/${commentId}`).then(() => {
+				this.$axios.delete(`/user/${this.identifier}/photos/${this.$props.photo.id}/comments/${commentId}`).then(() => {
 					this.temp_photo.numberOfComments -= 1;
 					this.list_of_comments = this.list_of_comments.filter((comment) => comment.id !== commentId);
+				}).catch(
+					(error) => {
+						console.log(error);
+					}
+				);
+			},
+			deletePhoto() {
+				this.$axios.delete(`/user/${this.identifier}/photos/${this.$props.photo.id}/`).then(() => {
+					console.log("Photo deleted");
 				}).catch(
 					(error) => {
 						console.log(error);
@@ -106,9 +110,15 @@
 
 <template>
 	<div class="p-3 card gap-2">
-		<RouterLink :to="'/profile/'+$props.photo.ownerUsername" class="fw-bold text-black" style="text-decoration: none" >
-			{{ $props.photo.ownerUsername }}
-		</RouterLink>
+		<div class="d-flex align-items-center justify-content-between">
+			<RouterLink :to="'/profile/'+$props.photo.ownerUsername" class="fw-bold text-black" style="text-decoration: none" >
+				{{ $props.photo.ownerUsername }}
+			</RouterLink>
+			<div class="text-danger" role="button" @click.prevent="deletePhoto" v-if="$props.photo.ownerUsername === this.username_req_user">
+				Elimina
+			</div>
+		</div>
+
 		<img
 			:src="img"
 			:alt='"ID: " + photo.id'
