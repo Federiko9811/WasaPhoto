@@ -5,7 +5,7 @@
 			return {
 				searchResults: [],
 				username: "",
-				identifier: localStorage.getItem("identifier")
+				identifier: this.$loggedUser.token,
 			}
 		},
 		methods: {

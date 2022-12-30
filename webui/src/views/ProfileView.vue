@@ -23,6 +23,7 @@
 				tempIsFollowed: false,
 				tempUsername: "",
 				showEditProfile: false,
+				id: this.$loggedUser.token
 			}
 		},
 		methods: {
@@ -31,9 +32,9 @@
 
 				//get username from the path
 				const pathUsername = this.$route.params.username
-				const id = localStorage.getItem("identifier")
 
-				this.$axios.get(`/user/${id}/profile-page/${pathUsername}`).then((response) => {
+
+				this.$axios.get(`/user/${this.id}/profile-page/${pathUsername}`).then((response) => {
 					this.profile = response.data;
 					this.tempIsBanned = this.profile.isBanned;
 					this.tempIsFollowed = this.profile.isFollowed;
@@ -47,42 +48,37 @@
 				);
 			},
 			followUser() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.put(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
+				this.$axios.put(`/user/${this.id}/follow/${this.profile.username}`,).then(() => {
 					this.tempIsFollowed = true;
 				}).catch((error) => {
 					console.log(error);
 				});
 			},
 			unfollowUser() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.delete(`/user/${id}/follow/${this.profile.username}`,).then((response) => {
+				this.$axios.delete(`/user/${this.id}/follow/${this.profile.username}`,).then(() => {
 					this.tempIsFollowed = false;
 				}).catch((error) => {
 					console.log(error);
 				});
 			},
 			banUser() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.put(`/user/${id}/ban/${this.profile.username}`,).then(() => {
+				this.$axios.put(`/user/${this.id}/ban/${this.profile.username}`,).then(() => {
 					this.tempIsBanned = true;
 				}).catch((error) => {
 					console.log(error);
 				});
 			},
 			unbanUser() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.delete(`/user/${id}/ban/${this.profile.username}`,).then(() => {
+				this.$axios.delete(`/user/${this.id}/ban/${this.profile.username}`,).then(() => {
 					this.tempIsBanned = false;
 				}).catch((error) => {
 					console.log(error);
 				});
 			},
 			editProfile() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.put(`/user/${id}/update-username`, {name: this.tempUsername}).then(() => {
+				this.$axios.put(`/user/${this.id}/update-username`, {name: this.tempUsername}).then(() => {
 					this.showEditProfile = false;
-					localStorage.setItem("username", this.tempUsername);
+					this.$loggedUser.username = this.tempUsername;
 					router.push(`/profile/${this.tempUsername}`);
 				}).catch((error) => {
 					console.log(error);
@@ -90,7 +86,7 @@
 			},
 		},
 		mounted() {
-			if (!localStorage.getItem("identifier")) {
+			if (this.id === -1) {
 				this.$router.push("/");
 			}
 			this.getProfile();

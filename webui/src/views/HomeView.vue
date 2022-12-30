@@ -3,13 +3,12 @@
 	export default {
 		data() {
 			return {
-				myStream: []
+				myStream: [],
 			}
 		},
 		methods: {
 			getMyStream() {
-				const id = localStorage.getItem("identifier")
-				this.$axios.get(`/user/${id}/photos/`).then((response) => {
+				this.$axios.get(`/user/${this.$loggedUser.token}/photos/`).then((response) => {
 					this.myStream = response.data;
 				}).catch(
 					(error) => {
@@ -19,10 +18,12 @@
 			}
 		},
 		mounted() {
-			if (!localStorage.getItem("identifier")) {
+			if (this.$loggedUser.token === -1) {
 				this.$router.push("/");
 			}
+
 			this.getMyStream();
+
 		},
 		components: {
 			PhotoCard,
@@ -35,9 +36,6 @@
 		<div>
 			<h1>Your Stream</h1>
 		</div>
-		<RouterLink to='/profile/Federiko9811'>
-			Federiko9811
-		</RouterLink>
 
 		<div class="d-flex flex-wrap justify-content-center gap-3">
 			<PhotoCard v-for="photo in myStream" :key="photo.id" :photo="photo" />

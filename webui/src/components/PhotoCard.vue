@@ -13,8 +13,8 @@
 				list_of_comments: [],
 				show_comments: false,
 				comment: "",
-				username_req_user: localStorage.getItem("username"),
-				identifier: localStorage.getItem("identifier")
+				username_req_user: this.$loggedUser.username,
+				identifier: this.$loggedUser.token,
 			}
 		},
  		props: {

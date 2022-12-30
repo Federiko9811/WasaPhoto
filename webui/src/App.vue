@@ -5,13 +5,12 @@ import { RouterView } from 'vue-router'
 	export default {
 		data(){
 			return {
-				username: localStorage.getItem("username"),
+				username: this.$loggedUser.username,
 			}
 		},
 		methods: {
 			async handleLogout() {
-				localStorage.removeItem("identifier");
-				localStorage.removeItem("username");
+				this.$loggedUser.logout()
 				this.$router.push("/");
 			}
 		},
@@ -33,7 +32,7 @@ import { RouterView } from 'vue-router'
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink :to="'/profile/' + this.username" class="nav-link">
+							<RouterLink :to="'/profile/' + this.$loggedUser.username" class="nav-link">
 								Profile Page
 							</RouterLink>
 						</li>
@@ -57,10 +56,10 @@ import { RouterView } from 'vue-router'
 				</div>
 			</nav>
 			<main class="col-md-9 ms-sm-auto col-lg-12" v-if="$route.name === 'Login'">
-				<RouterView />
+				<RouterView :key="this.$route.path"/>
 			</main>
 			<main class="col-md-9 ms-sm-auto col-lg-10" v-if="$route.name !== 'Login'">
-				<RouterView />
+				<RouterView :key="this.$route.path"/>
 			</main>
 		</div>
 	</div>

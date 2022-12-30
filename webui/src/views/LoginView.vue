@@ -7,13 +7,20 @@
 			}
 		},
 		methods: {
-			async handleLogin() {
-				const response = await this.$axios.post("/session", {name: this.name});
-				localStorage.setItem("identifier", response.data.identifier);
-				localStorage.setItem("username", this.name);
-				this.$router.push("/home");
+			handleLogin() {
+				this.$axios.post("/session", {name: this.name}).then(
+					res => {
+						this.$loggedUser.setLoggedUser(res.data.identifier, this.name);
+						this.$axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.identifier}`;
+						this.$router.push("/home");
+					}
+				).catch(
+					(error) => {
+						console.log(error);
+					}
+				);
 			}
-		}
+		},
 	}
 </script>
 

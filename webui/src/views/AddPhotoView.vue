@@ -3,27 +3,25 @@
 		name: "AddPhotoView",
 		data() {
 			return {
-				errormsg: null,
-				loading: false,
 				photo: null
 			}
 		},
 		methods: {
 			addPhoto() {
-				this.loading = true
-				const id = localStorage.getItem("identifier")
-				this.$axios.post(`/user/${id}/photos/`, this.$refs.photo.files[0]).then((response) => {
+				this.$axios.post(`/user/${this.$loggedUser.token}/photos/`, this.$refs.photo.files[0]).then((response) => {
 					console.log(response.data)
 				}).catch(
 					(error) => {
-						this.errormsg = error.response.data.message;
 						console.log(error);
 					}
-				).finally(() => {
-					this.loading = false
-				});
+				)
 			}
 		},
+		mounted() {
+			if (this.$loggedUser.token === -1) {
+				this.$router.push("/")
+			}
+		}
 	}
 </script>
 
