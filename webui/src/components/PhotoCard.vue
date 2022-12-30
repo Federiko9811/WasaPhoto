@@ -57,14 +57,21 @@
 				this.$axios.post(`/user/${this.identifier}/photos/${this.$props.photo.id}/comments/`, {
 					comment: this.comment,
 				}).then((r) => {
-					this.temp_photo.numberOfComments += 1;
-					const now = new Date().toISOString();
-					this.list_of_comments.unshift({
+
+					const x = {
 						id: r.data.comment_id,
 						content: this.comment,
-						created_at: now,
+						created_at: new Date().toISOString(),
 						owner: this.username_req_user
-					})
+					}
+
+					if (this.list_of_comments.length === 0) {
+						this.list_of_comments.push(x)
+					} else {
+						this.list_of_comments.unshift(x);
+					}
+					this.temp_photo.numberOfComments += 1;
+
 					this.comment = "";
 				}).catch(
 					(error) => {
@@ -74,7 +81,9 @@
 			},
 			getComments() {
 				this.$axios.get(`/user/${this.identifier}/photos/${this.$props.photo.id}/comments/`).then((response) => {
-					this.list_of_comments = response.data;
+					if (response.data !== null) {
+						this.list_of_comments = response.data;
+					}
 				}).catch(
 					(error) => {
 						console.log(error);
@@ -181,7 +190,7 @@
 		<!--Lista commenti-->
 		<div v-if="show_comments" class="d-flex flex-column gap-2 align-items-center justify-content-center">
 			<div class="d-flex flex-column gap-2 w-100">
-				<div v-for="comment in list_of_comments" class="d-flex flex-column gap-2">
+				<div v-for="comment in list_of_comments" :key="comment.id" class="d-flex flex-column gap-2">
 					<div class="d-flex flex-column gap-2 bg-light p-2 rounded border">
 						<div class="d-flex justify-content-between">
 							<RouterLink :to="'/profile/'+comment.owner" class="fw-bold text-black" style="text-decoration: none" >

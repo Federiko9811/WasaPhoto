@@ -32,7 +32,7 @@ import { RouterView } from 'vue-router'
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink :to="'/profile/' + this.$loggedUser.username" class="nav-link">
+							<RouterLink :to="`/profiles/${this.$loggedUser.username}`" class="nav-link">
 								Profile Page
 							</RouterLink>
 						</li>

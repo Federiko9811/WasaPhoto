@@ -6,8 +6,6 @@
 		name: "ProfileView",
 		data() {
 			return {
-				errormsg: null,
-				loading: false,
 				profile: {
 					username: "",
 					photos: [],
@@ -28,21 +26,17 @@
 		},
 		methods: {
 			getProfile() {
-				this.loading = true
 
 				//get username from the path
 				const pathUsername = this.$route.params.username
 
-
 				this.$axios.get(`/user/${this.id}/profile-page/${pathUsername}`).then((response) => {
 					this.profile = response.data;
-					this.tempIsBanned = this.profile.isBanned;
-					this.tempIsFollowed = this.profile.isFollowed;
-					this.tempUsername = this.profile.username;
-					this.loading = false;
+					this.tempIsBanned = response.data.isBanned;
+					this.tempIsFollowed = response.data.isFollowed;
+					this.tempUsername = response.data.username;
 				}).catch(
 					(error) => {
-						this.errormsg = error.response.data.message;
 						console.log(error);
 					}
 				);
@@ -166,7 +160,6 @@
 				</button>
 			</div>
 		</div>
-		<!--List all photos using photocard-->
 		<div class="d-flex flex-wrap justify-content-center gap-3">
 			<PhotoCard v-for="photo in profile.photos" :key="photo.id" :photo="photo"/>
 		</div>
