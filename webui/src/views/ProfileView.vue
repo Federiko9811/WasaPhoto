@@ -1,5 +1,6 @@
 <script>
 	export default {
+		emits: ['photoDeleted'],
 		name: "ProfileView",
 		data() {
 			return {
@@ -155,7 +156,7 @@
 			</div>
 		</div>
 		<div class="d-flex flex-wrap justify-content-center gap-3">
-			<PhotoCard v-for="photo in profile.photos" :key="photo.id" :photo="photo"/>
+			<PhotoCard v-for="photo in profile.photos" :key="photo.id" :photo="photo" v-on:photoDeleted="this.getProfile"/>
 		</div>
 
 	</div>

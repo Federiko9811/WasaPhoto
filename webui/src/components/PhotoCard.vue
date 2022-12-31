@@ -1,5 +1,6 @@
 <script>
 	export default {
+		emits: ['photoDeleted'],
 		name: "PhotoCard",
 		data() {
 			return {
@@ -102,7 +103,7 @@
 			},
 			deletePhoto() {
 				this.$axios.delete(`/user/${this.identifier}/photos/${this.$props.photo.id}/`).then(() => {
-					console.log("Photo deleted");
+					this.$emit('photoDeleted', this.$props.photo.id);
 				}).catch(
 					(error) => {
 						console.log(error);
