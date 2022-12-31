@@ -1,7 +1,4 @@
 <script>
-	import PhotoCard from "../components/PhotoCard.vue";
-	import router from "../router";
-
 	export default {
 		name: "ProfileView",
 		data() {
@@ -73,7 +70,7 @@
 				this.$axios.put(`/user/${this.id}/update-username`, {name: this.tempUsername}).then(() => {
 					this.showEditProfile = false;
 					this.$loggedUser.username = this.tempUsername;
-					router.push(`/profile/${this.tempUsername}`);
+					this.$router.push(`/profile/${this.tempUsername}`);
 				}).catch((error) => {
 					console.log(error);
 				});
@@ -84,9 +81,6 @@
 				this.$router.push("/");
 			}
 			this.getProfile();
-		},
-		components: {
-			PhotoCard,
 		}
 	}
 </script>

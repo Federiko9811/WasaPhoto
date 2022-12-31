@@ -1,5 +1,4 @@
 <script>
-	import PhotoCard from "../components/PhotoCard.vue";
 	export default {
 		data() {
 			return {
@@ -24,9 +23,6 @@
 
 			this.getMyStream();
 
-		},
-		components: {
-			PhotoCard,
 		}
 	}
 </script>

@@ -7,6 +7,8 @@ import ErrorMsg from './components/ErrorMsg.vue'
 import LoadingSpinner from './components/LoadingSpinner.vue'
 import PhotoCard from "./components/PhotoCard.vue";
 
+
+
 import './assets/dashboard.css'
 import './assets/main.css'
 
@@ -18,4 +20,6 @@ app.component("LoadingSpinner", LoadingSpinner);
 app.component("PhotoCard", PhotoCard);
 app.use(router)
 app.mount('#app')
+
+
 
