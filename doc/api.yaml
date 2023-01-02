@@ -105,6 +105,12 @@ components:
         image/jpeg:
           schema:
             $ref: '#/components/schemas/Image'
+#    Comment:
+#      description: Comment retrieved successfully
+#      content:
+#        application/json:
+#          schema:
+#            $ref: "#/components/schemas/Comment"
     Comments:
       description: List of Comments retrieved successfully
       content:
@@ -117,12 +123,6 @@ components:
             example: [ { "id": 1, "owner": "Federiko98", "content": "test content", "createdAt": "2021-12-12T12:12:12.000Z" } ]
             items:
               $ref: "#/components/schemas/Comment"
-    Comment:
-      description: Comment retrieved successfully
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Comment"
   parameters:
     AuthenticatedUserId:
       name: authenticatedUserId
