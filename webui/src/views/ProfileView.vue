@@ -14,18 +14,16 @@
 					isFollowed: false,
 					isOwner: false,
 				},
-
 				tempIsBanned: false,
 				tempIsFollowed: false,
 				tempUsername: "",
 				showEditProfile: false,
-				id: this.$loggedUser.token
+				id: this.$loggedUser.token,
+				forbidden_error: false,
 			}
 		},
 		methods: {
 			getProfile() {
-
-				//get username from the path
 				const pathUsername = this.$route.params.username
 
 				this.$axios.get(`/user/${this.id}/profile-page/${pathUsername}`).then((response) => {
@@ -35,7 +33,9 @@
 					this.tempUsername = response.data.username;
 				}).catch(
 					(error) => {
-						console.log(error);
+						if (error.response.status === 403) {
+							this.forbidden_error = true;
+						}
 					}
 				);
 			},
@@ -87,8 +87,14 @@
 </script>
 
 <template>
-<!--	Profile page using bootstrap-->
-	<div class="container d-flex flex-column min-vh-100 align-items-center my-5 gap-3">
+	<!--	Profile page using bootstrap-->
+	<div class="container d-flex flex-column min-vh-100 align-items-center my-5 gap-3" v-if="this.forbidden_error">
+		<div class="alert alert-danger" role="alert">
+			Sei bannato da questo utente
+		</div>
+	</div>
+
+	<div class="container d-flex flex-column min-vh-100 align-items-center my-5 gap-3" v-if="!this.forbidden_error">
 		<div v-if="!showEditProfile">
 			<h1>{{this.tempUsername}}</h1>
 		</div>
