@@ -82,8 +82,14 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 		return
 	}
 
-	// check if the request user is banned from the user profile
-	banned, err := rt.db.CheckBan(6, token)
+	profileToken, err := rt.db.GetUserTokenOnly(username)
+	if err != nil {
+		utils.ReturnInternalServerError(w, err)
+		return
+	}
+
+	banned := false
+	banned, err = rt.db.CheckBan(profileToken, token)
 	if err != nil || banned {
 		utils.ReturnForbiddenMessage(w)
 		return

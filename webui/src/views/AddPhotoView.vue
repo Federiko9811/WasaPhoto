@@ -4,8 +4,8 @@
 		data() {
 			return {
 				photo: null,
-				success: true,
-				error: true,
+				success: false,
+				error: false,
 			}
 		},
 		methods: {
@@ -55,7 +55,7 @@
 		<div
 			class="alert alert-danger w-50 d-flex justify-content-between"
 			role="alert"
-			v-if="this.success"
+			v-if="this.error"
 			@click.prevent="closeAlert"
 		>
 			<div>
