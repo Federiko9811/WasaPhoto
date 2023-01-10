@@ -49,10 +49,6 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/user/:userId/photos/:photoId/comments/", rt.authWrapperNoPath(rt.commentPhoto))
 
 	// COMMENTS
-
-	// get the comment of a photo
-	// rt.router.GET("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.getComment))
-	// delete a comment
 	rt.router.DELETE("/user/:userId/photos/:photoId/comments/:commentId", rt.authWrapperNoPath(rt.deleteComment))
 
 	return rt.router

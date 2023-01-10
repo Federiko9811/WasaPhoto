@@ -88,7 +88,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 		return
 	}
 
-	banned := false
+	var banned bool
 	banned, err = rt.db.CheckBan(profileToken, token)
 	if err != nil || banned {
 		utils.ReturnForbiddenMessage(w)
