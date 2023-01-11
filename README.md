@@ -19,7 +19,7 @@ $ docker build -t wasa-photo-frontend:latest -f Dockerfile.frontend .
 ### Backend
 
 ```sh
-$ docker run -it --rm -v $(pwd)/service/database/source:/app/service/database/source -p 3000:3000 wasa-photo-backend:latest
+$ docker run -it --rm -p 3000:3000 wasa-photo-backend:latest
 ```
 
 ### Frontend
