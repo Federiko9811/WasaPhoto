@@ -56,9 +56,51 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
+	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='user';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
+		sqlStmt := `
+			create table user
+			(
+				token    INTEGER primary key autoincrement,
+				username TEXT not null unique
+			);
+
+			create table photo
+			(
+				id         INTEGER primary key autoincrement,
+				owner      INTEGER not null references user on delete cascade,
+				img        BLOB    not null,
+				created_at DATETIME default CURRENT_TIMESTAMP
+			);
+
+			create table like
+			(
+				owner INTEGER not null references user on delete cascade,
+				photo INTEGER not null references photo on delete cascade,
+				primary key (owner, photo)
+			);
+			create table follow
+			(
+				following INTEGER not null references user,
+				followed  INTEGER not null references user,
+				primary key (following, followed),
+				check (following != followed)
+			);
+			create table comment
+			(
+				id         INTEGER primary key autoincrement,
+				content    TEXT                               not null,
+				created_at DATETIME default CURRENT_TIMESTAMP not null,
+				owner      INTEGER                            not null references user,
+				photo      INTEGER                            not null references photo
+			);
+			create table ban
+			(
+				banning INTEGER not null references user,
+				banned  INTEGER not null references user,
+				primary key (banning, banned),
+				check (banning != banned)
+			);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
