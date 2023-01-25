@@ -10,16 +10,24 @@
 		},
 		methods: {
 			addPhoto() {
-				this.$axios.post(`/user/${this.$loggedUser.token}/photos/`, this.$refs.photo.files[0]).then(() => {
-					this.success = true
-					this.error = false
-				}).catch(
-					() => {
-						this.success = false
-						this.error = true
-						this.photo = null
-					}
-				)
+				const currentPhoto = this.$refs.photo.files[0]
+				if (currentPhoto) {
+					this.$axios.post(`/user/${this.$loggedUser.token}/photos/`, currentPhoto).then(() => {
+						this.success = true
+						this.error = false
+					}).catch(
+						() => {
+							this.success = false
+							this.error = true
+							this.photo = null
+						}
+					)
+				} else {
+					this.success = false
+					this.error = true
+				}
+
+
 			},
 			closeAlert() {
 				this.success = false
@@ -43,12 +51,11 @@
 			class="alert alert-success w-50 d-flex justify-content-between"
 			role="alert"
 			v-if="this.success"
-			@click.prevent="closeAlert"
 		>
 			<div>
 				Foto Caricata correttamente
 			</div>
-			<div role="button">
+			<div role="button" @click.prevent="closeAlert">
 				X
 			</div>
 		</div>
@@ -56,12 +63,11 @@
 			class="alert alert-danger w-50 d-flex justify-content-between"
 			role="alert"
 			v-if="this.error"
-			@click.prevent="closeAlert"
 		>
 			<div>
 				Errore di caricamento
 			</div>
-			<div role="button">
+			<div role="button" @click.prevent="closeAlert">
 				X
 			</div>
 		</div>
