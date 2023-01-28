@@ -28,8 +28,20 @@ func (rt *_router) authWrapper(fn httpRouterHandler) func(http.ResponseWriter, *
 			return
 		}
 
-		// Get the user id from the token
-		pathToken := utils.ExtractTokenFromPath(w, ps, "userId")
+		nomiParametri := [3]string{"", "", ""}
+
+		for i, param := range ps {
+			nomiParametri[i] = param.Key
+		}
+
+		var pathToken int64
+		if nomiParametri[0] == "userId" && nomiParametri[2] != "authenticatedUserId" {
+			// Get the user id from the token because the request user id is in the userId parameter
+			pathToken = utils.ExtractTokenFromPath(w, ps, "userId")
+		} else if nomiParametri[0] == "userId" && nomiParametri[2] == "authenticatedUserId" {
+			// Get the user id from the token because the request user id is in the authenticatedUserId parameter
+			pathToken = utils.ExtractTokenFromPath(w, ps, "authenticatedUserId")
+		}
 
 		if pathToken != token {
 			w.WriteHeader(http.StatusForbidden)
