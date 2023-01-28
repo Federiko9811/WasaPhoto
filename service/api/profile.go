@@ -11,7 +11,7 @@ import (
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("content-type", "application/json")
 
-	// Decode request body
+	// Get the username from the request body
 	var username structs.Username
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
@@ -19,13 +19,13 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 		return
 	}
 
-	// check if the username respect a regex
+	// Check if the username respect a regex
 	match := utils.CheckUsernameRegex(w, username.Username)
 	if !match {
 		return
 	}
 
-	// Get user token from database
+	// Get user token from database, if the user doesn't exist, create it
 	var identifier structs.Token
 	identifier.Identifier, err = rt.db.GetUserToken(username.Username)
 	if err != nil {
@@ -45,7 +45,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httprouter.Params, pathToken int64) {
 	w.Header().Set("content-type", "application/json")
 
-	// Decode request body
+	// Get the username from the request body
 	var username structs.Username
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
@@ -53,7 +53,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
-	// check if the username respect a regex
+	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username.Username)
 	if !match {
 		return
@@ -65,6 +65,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		utils.ReturnInternalServerError(w, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	res := structs.Message{
 		Message: "Username updated",
@@ -76,18 +77,23 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p httprouter.Params, token int64) {
 	w.Header().Set("content-type", "application/json")
 
+	// Get the username from the path
 	username := p.ByName("username")
+
+	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
 		return
 	}
 
+	// Get user profile from database
 	profileToken, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
 	}
 
+	// Check if the user is banned
 	var banned bool
 	banned, err = rt.db.CheckBan(profileToken, token)
 	if err != nil || banned {
@@ -95,7 +101,9 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 		return
 	}
 
-	profile, err := rt.db.GetUserProfile(username, token)
+	// Get user profile from database
+	var profile structs.UserProfile
+	profile, err = rt.db.GetUserProfile(username, token)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
 		return
@@ -109,13 +117,16 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 func (rt *_router) searchUser(w http.ResponseWriter, _ *http.Request, p httprouter.Params, _ int64) {
 	w.Header().Set("content-type", "application/json")
 
+	// Get the username from the path
 	username := p.ByName("username")
+
+	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
 		return
 	}
 
-	// Get user profile from database
+	// Get users from database the username contains the given username
 	users, err := rt.db.GetUsersList(username)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
