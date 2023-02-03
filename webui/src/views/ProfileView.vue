@@ -20,6 +20,7 @@
 				showEditProfile: false,
 				id: this.$loggedUser.token,
 				forbidden_error: false,
+				conflict_error: false,
 			}
 		},
 		methods: {
@@ -68,13 +69,24 @@
 				});
 			},
 			editProfile() {
+				if (this.tempUsername === this.$loggedUser.username) {
+					this.showEditProfile = false;
+					return
+				}
 				this.$axios.put(`/user/${this.id}/update-username`, {name: this.tempUsername}).then(() => {
 					this.showEditProfile = false;
 					this.$loggedUser.username = this.tempUsername;
 					this.$router.push(`/profile/${this.tempUsername}`);
+					this.conflict_error = false;
 				}).catch((error) => {
 					console.log(error);
+					if (error.response.status === 409) {
+						this.conflict_error = true;
+					}
 				});
+			},
+			closeAlert() {
+				this.conflict_error = false;
 			},
 		},
 		mounted() {
@@ -95,6 +107,18 @@
 	</div>
 
 	<div class="container d-flex flex-column min-vh-100 align-items-center my-5 gap-3" v-if="!this.forbidden_error">
+		<div
+			class="alert alert-danger w-50 d-flex justify-content-between"
+			role="alert"
+			v-if="this.conflict_error"
+		>
+			<div>
+				Questo username è già stato preso
+			</div>
+			<div role="button" @click.prevent="closeAlert">
+				X
+			</div>
+		</div>
 		<div v-if="!showEditProfile">
 			<h1>{{this.tempUsername}}</h1>
 		</div>
@@ -156,8 +180,14 @@
 				>
 					Unban
 				</button>
-				<button class="btn btn-primary" v-if="profile.isOwner" @click.prevent="() => this.showEditProfile=!this.showEditProfile">
+				<button class="btn btn-primary" v-if="profile.isOwner && !this.showEditProfile" @click.prevent="() => this.showEditProfile=!this.showEditProfile">
 					Edit Profile
+				</button>
+				<button class="btn btn-danger" v-if="profile.isOwner && this.showEditProfile" @click.prevent="() => {
+					this.showEditProfile=!this.showEditProfile
+					this.tempUsername = this.profile.username
+				}">
+					Annulla
 				</button>
 			</div>
 		</div>

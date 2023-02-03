@@ -11,6 +11,7 @@ import (
 type AppDatabase interface {
 	Ping() error
 	GetUserTokenOnly(username string) (int64, error)
+	CheckUsernameExistence(username string) (int64, error)
 	CheckPhotoOwner(token int64, photoId int64) (bool, error)
 	GetPhotoOwner(photoId int64) (int64, error)
 	CheckLike(token int64, photoId int64) (bool, error)

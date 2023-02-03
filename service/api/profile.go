@@ -59,6 +59,14 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 		return
 	}
 
+	// Check id the username already exist
+	var existence int64
+	existence, err = rt.db.CheckUsernameExistence(username.Username)
+	if err != nil || existence != 0 {
+		utils.ReturnConfilictMessage(w)
+		return
+	}
+
 	// Update username in database for the user with the given token
 	err = rt.db.SetUserName(pathToken, username.Username)
 	if err != nil {

@@ -257,3 +257,12 @@ func (db *appdbimpl) GetUserTokenOnly(username string) (int64, error) {
 	}
 	return token, nil
 }
+
+func (db *appdbimpl) CheckUsernameExistence(username string) (int64, error) {
+	var count int64
+	err := db.c.QueryRow("SELECT count(*) FROM user WHERE username=?", username).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
