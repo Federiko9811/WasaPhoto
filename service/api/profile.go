@@ -22,6 +22,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, _ httprouter.
 	// Check if the username respect a regex
 	match := utils.CheckUsernameRegex(w, username.Username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
 
@@ -56,6 +57,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username.Username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
 
@@ -91,13 +93,14 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, _ *http.Request, p http
 	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 
 	// Get user profile from database
 	profileToken, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
-		utils.ReturnInternalServerError(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -131,6 +134,7 @@ func (rt *_router) searchUser(w http.ResponseWriter, _ *http.Request, p httprout
 	// Check if the username respect the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 

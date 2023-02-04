@@ -15,13 +15,22 @@ func (rt *_router) authWrapper(fn httpRouterHandler) func(http.ResponseWriter, *
 		w.Header().Set("content-type", "application/json")
 		// Take the content of the Authorization header
 		token, err := utils.ExtractToken(r)
-
-		// Check if token is valid
-		if !rt.db.CheckToken(token) || err != nil {
+		if err != nil || token == -1 {
 			w.WriteHeader(http.StatusUnauthorized)
-			rt.baseLogger.Errorf("Not Valid Token: %v", err)
+			rt.baseLogger.Errorf("No Token: %v", err)
 			res := structs.Message{
-				Message: "Not Valid Token",
+				Message: "No Token in the Header",
+			}
+			err = json.NewEncoder(w).Encode(res)
+			utils.ReturnInternalServerError(w, err)
+			return
+		}
+
+		if !rt.db.CheckToken(token) {
+			w.WriteHeader(http.StatusNotFound)
+			rt.baseLogger.Errorf("Not Active Token: %v", err)
+			res := structs.Message{
+				Message: "Not Active Token",
 			}
 			err = json.NewEncoder(w).Encode(res)
 			utils.ReturnInternalServerError(w, err)

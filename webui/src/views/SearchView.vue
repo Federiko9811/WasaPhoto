@@ -6,6 +6,7 @@
 				searchResults: [],
 				username: "",
 				identifier: this.$loggedUser.token,
+				no_results: false,
 			}
 		},
 		methods: {
@@ -13,7 +14,7 @@
 				if (this.username.length >= 3 && this.username.length <= 16) {
 					this.$axios.get(`/user/${this.identifier}/search/${this.username}`).then((response) => {
 						this.searchResults = response.data;
-						console.log(this.searchResults);
+						this.no_results = !this.searchResults;
 					}).catch((error) => {
 						console.log(error);
 					});
@@ -47,6 +48,7 @@
 			>
 				<h3>{{user}}</h3>
 			</router-link>
+			<h5 v-if="no_results">Nessun utente Trovato</h5>
 		</div>
 	</div>
 </template>

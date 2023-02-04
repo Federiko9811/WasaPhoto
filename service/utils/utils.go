@@ -28,6 +28,16 @@ func ReturnInternalServerError(w http.ResponseWriter, err error) {
 	}
 }
 
+func ReturnNotFoundError(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+	res := structs.Message{
+		Message: "Resource Not Found",
+	}
+	err := json.NewEncoder(w).Encode(res)
+	ReturnInternalServerError(w, err)
+	return
+}
+
 func ReturnCreatedMessage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusCreated)
 	res := structs.Message{
