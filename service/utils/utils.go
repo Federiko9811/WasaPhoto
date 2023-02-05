@@ -35,7 +35,6 @@ func ReturnNotFoundError(w http.ResponseWriter) {
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
-	return
 }
 
 func ReturnCreatedMessage(w http.ResponseWriter) {
