@@ -15,13 +15,14 @@ func (rt *_router) followUser(w http.ResponseWriter, _ *http.Request, p httprout
 	// Check if the username respects the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 
 	// Get the token of the username
 	token2, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
-		utils.ReturnInternalServerError(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -43,7 +44,7 @@ func (rt *_router) followUser(w http.ResponseWriter, _ *http.Request, p httprout
 	var check bool
 	check, err = rt.db.CheckFollow(token, token2)
 	if err != nil || check {
-		utils.ReturnConfilictMessage(w)
+		utils.ReturnConflictMessage(w)
 		return
 	}
 
@@ -66,13 +67,14 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, _ *http.Request, p httpro
 	// Check if the username respects the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 
 	// Get the token of the username
 	token2, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
-		utils.ReturnInternalServerError(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -117,13 +119,14 @@ func (rt *_router) banUser(w http.ResponseWriter, _ *http.Request, p httprouter.
 	// Check if the username respects the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 
 	// Get the token of the username
 	token2, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
-		utils.ReturnInternalServerError(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -137,7 +140,7 @@ func (rt *_router) banUser(w http.ResponseWriter, _ *http.Request, p httprouter.
 	var check bool
 	check, err = rt.db.CheckBan(token, token2)
 	if err != nil || check {
-		utils.ReturnConfilictMessage(w)
+		utils.ReturnConflictMessage(w)
 		return
 	}
 
@@ -160,13 +163,14 @@ func (rt *_router) unbanUser(w http.ResponseWriter, _ *http.Request, p httproute
 	// Check if the username respects the regex
 	match := utils.CheckUsernameRegex(w, username)
 	if !match {
+		utils.ReturnBadRequestMessage(w, nil)
 		return
 	}
 
 	// Get the token of the username
 	token2, err := rt.db.GetUserTokenOnly(username)
 	if err != nil {
-		utils.ReturnInternalServerError(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 

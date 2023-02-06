@@ -61,7 +61,7 @@ func ReturnBadRequestMessage(w http.ResponseWriter, err error) {
 func ReturnBadRequestCustomMessage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
 	res := structs.Message{
-		Message: "Bad Request the request is not valid",
+		Message: "Bad Request, The request is not valid",
 	}
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
@@ -75,7 +75,7 @@ func ReturnForbiddenMessage(w http.ResponseWriter) {
 	err := json.NewEncoder(w).Encode(res)
 	ReturnInternalServerError(w, err)
 }
-func ReturnConfilictMessage(w http.ResponseWriter) {
+func ReturnConflictMessage(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusConflict)
 	res := structs.Message{
 		Message: "This resource is already in the db",

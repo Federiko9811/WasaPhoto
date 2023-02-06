@@ -18,6 +18,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, _ httprou
 		utils.ReturnBadRequestMessage(w, err)
 		return
 	}
+
 	err = rt.db.PostPhoto(photo, token)
 	if err != nil {
 		utils.ReturnInternalServerError(w, err)
@@ -41,7 +42,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	var existence bool
 	existence, err = rt.db.CheckPhotoExistence(photoId)
 	if err != nil || !existence {
-		utils.ReturnBadRequestMessage(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -86,7 +87,7 @@ func (rt *_router) getPhoto(w http.ResponseWriter, _ *http.Request, p httprouter
 	var existence bool
 	existence, err = rt.db.CheckPhotoExistence(photoId)
 	if err != nil || !existence {
-		utils.ReturnBadRequestMessage(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -137,7 +138,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httproute
 	var existence bool
 	existence, err = rt.db.CheckPhotoExistence(photoId)
 	if err != nil || !existence {
-		utils.ReturnBadRequestMessage(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -149,7 +150,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httproute
 		return
 	}
 
-	// Check if the owner of the photo is the request user
+	// Check if the path owner id is the same as the request user
 	if owner != pathOwner {
 		utils.ReturnBadRequestCustomMessage(w)
 		return
@@ -167,7 +168,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, _ *http.Request, p httproute
 	var like bool
 	like, err = rt.db.CheckLike(token, photoId)
 	if err != nil || like {
-		utils.ReturnConfilictMessage(w)
+		utils.ReturnConflictMessage(w)
 		return
 	}
 
@@ -203,7 +204,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	var existence bool
 	existence, err = rt.db.CheckPhotoExistence(photoId)
 	if err != nil || !existence {
-		utils.ReturnBadRequestMessage(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 
@@ -215,7 +216,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 		return
 	}
 
-	// Check if the owner of the photo is the request user
+	// Check if the path owner id is the same as the request user
 	if owner != pathOwner {
 		utils.ReturnBadRequestCustomMessage(w)
 		return
@@ -233,7 +234,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, _ *http.Request, p httprou
 	var like bool
 	like, err = rt.db.CheckLike(token, photoId)
 	if err != nil || !like {
-		utils.ReturnConfilictMessage(w)
+		utils.ReturnConflictMessage(w)
 		return
 	}
 
@@ -261,7 +262,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, p httpro
 	var existence bool
 	existence, err = rt.db.CheckPhotoExistence(photoId)
 	if err != nil || !existence {
-		utils.ReturnBadRequestMessage(w, err)
+		utils.ReturnNotFoundError(w)
 		return
 	}
 

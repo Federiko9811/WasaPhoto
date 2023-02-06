@@ -65,7 +65,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, _ httpr
 	var existence int64
 	existence, err = rt.db.CheckUsernameExistence(username.Username)
 	if err != nil || existence != 0 {
-		utils.ReturnConfilictMessage(w)
+		utils.ReturnConflictMessage(w)
 		return
 	}
 
